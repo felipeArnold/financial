@@ -1,0 +1,62 @@
+models:
+  People:
+    name: string:50
+    type: enum:physical,legal
+    surname: string:50
+    document: string:14
+    birth_date: date
+
+  Emails:
+      address: email
+      morphs: emailable
+
+  Phones:
+    number: string:15
+    morphs: phonable
+
+  Addresses:
+    street: string:50
+    number: string:10
+    complement: string:50
+    district: string:50
+    city: string:50
+    state: string:2
+    country: string:2
+    zip_code: string:10
+    morphs: addressable
+
+  Orders:
+    order_number: string:15
+    total: decimal:10,2
+
+
+Factory:
+  People:
+        name: name
+        type: type
+        surname: surname
+        document: document
+        birth_date: birth_date
+
+    Email:
+        address: email
+
+    Phone:
+        number: phone
+
+    Address:
+        street: street
+        number: number
+        complement: complement
+        district: district
+        city: city
+        state: state
+        country: country
+        zip_code: zip_code
+
+    order:
+        order_number: order_number
+        total: total
+        created_at: now
+        updated_at: now
+        deleted_at: null

@@ -1,0 +1,8 @@
+created: 'database/factories/PersonsFactory.php database/factories/EmailsFactory.php database/factories/PhonesFactory.php database/factories/AddressesFactory.php database/factories/OrdersFactory.php database/migrations/2024_03_11_211830_create_persons_table.php database/migrations/2024_03_11_211831_create_emails_table.php database/migrations/2024_03_11_211832_create_phones_table.php database/migrations/2024_03_11_211833_create_addresses_table.php database/migrations/2024_03_11_211834_create_orders_table.php app/Models/Persons.php app/Models/Emails.php app/Models/Phones.php app/Models/Addresses.php app/Models/Orders.php'
+models:
+    Addresses: { addressable_type: string, addressable_id: integer, street: string, number: string, complement: string, district: string, city: string, state: string, country: string, zip_code: string }
+    Emails: { address: string, emailable_type: string, emailable_id: integer }
+    Orders: { order_number: string, total: 'decimal:10' }
+    Person: {  }
+    Phones: { number: string, phonable_type: string, phonable_id: integer }
+    User: { name: string, email: string, email_verified_at: 'datetime nullable', password: string, remember_token: 'string nullable' }
