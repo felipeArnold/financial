@@ -3,10 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PeopleResource\Pages;
-use App\Filament\Resources\PeopleResource\RelationManagers;
-use App\Filament\Resources\PhonesResource\RelationManagers\PeopleRelationManager;
-use App\Filament\Resources\PhonesResource\RelationManagers\PhonesRelationManager;
 use App\Models\People;
+use Filament\Tables\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,12 +12,15 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class PeopleResource extends Resource
 {
     protected static ?string $model = People::class;
 
     protected static ?string $label = 'Pessoas';
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -83,18 +84,24 @@ class PeopleResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
+                ExportBulkAction::make()
+            ])
+            ->emptyStateIcon('heroicon-o-users')
+            ->emptyStateHeading('Nenhuma pessoa encontrada')
+            ->emptyStateDescription('Crie uma nova pessoa clicando no botão abaixo')
+            ->emptyStateActions([
+                Action::make('create')
+                    ->label('Criar pessoa')
+                    ->icon('heroicon-m-plus')
+                    ->url('people/create')
             ]);
-    }
-    public static function getRelations(): array
-    {
-        return [
-        ];
+
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManagePeople::route('/'),
+            'index' => Pages\ManagePeople::route('/')
         ];
     }
 

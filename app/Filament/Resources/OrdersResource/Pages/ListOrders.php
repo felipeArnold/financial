@@ -25,16 +25,26 @@ class ListOrders extends ListRecords
     {
         return OrdersResource::getWidgets();
     }
-
     public function getTabs(): array
     {
         return [
-            null => Tab::make('Todos'),
-            'Novos' => Tab::make()->query(fn ($query) => $query->where('status', 'new')),
-            'Processando' => Tab::make()->query(fn ($query) => $query->where('status', 'processing')),
-            'Enviado' => Tab::make()->query(fn ($query) => $query->where('status', 'shipped')),
-            'Entregue' => Tab::make()->query(fn ($query) => $query->where('status', 'delivered')),
-            'Cancelado' => Tab::make()->query(fn ($query) => $query->where('status', 'cancelled')),
+            null => Tab::make('Todos')
+                ->icon('heroicon-o-rectangle-stack'),
+            'Novos' => Tab::make()
+                ->icon('heroicon-o-information-circle')
+                ->query(fn ($query) => $query->where('status', 'new')),
+            'Processando' => Tab::make()
+                ->icon('heroicon-o-clock')
+                ->query(fn ($query) => $query->where('status', 'processing')),
+            'Enviado' => Tab::make()
+                ->icon('heroicon-o-truck')
+                ->query(fn ($query) => $query->where('status', 'shipped')),
+            'Entregue' => Tab::make()
+                ->icon('heroicon-o-check')
+                ->query(fn ($query) => $query->where('status', 'delivered')),
+            'Cancelado' => Tab::make()
+                ->icon('heroicon-o-x-circle')
+                ->query(fn ($query) => $query->where('status', 'cancelled')),
         ];
     }
 }

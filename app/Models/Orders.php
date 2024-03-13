@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Enums\OrdersStatusEnum;
+use App\Observers\OrdersObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+#[ObservedBy(OrdersObserver::class)]
 class Orders extends Model
 {
     use HasFactory;
@@ -16,12 +20,7 @@ class Orders extends Model
      *
      * @var array
      */
-    protected $fillable = [
-        'order_number',
-        'status',
-        'total',
-        'deleted_at',
-    ];
+    protected $guarded = ['id'];
 
     /**
      * The attributes that should be cast to native types.
@@ -31,5 +30,11 @@ class Orders extends Model
     protected $casts = [
         'id' => 'integer',
         'total' => 'decimal:2',
+//        'status' => OrdersStatusEnum::class,
     ];
+
+    public function getForms()
+    {
+
+    }
 }

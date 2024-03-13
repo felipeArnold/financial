@@ -4,23 +4,28 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrdersResource\Pages;
 use App\Filament\Resources\OrdersResource\RelationManagers;
-use App\Filament\Resources\OrdersResource\Widgets\OrderStats;
-use App\Filament\Resources\OrdersResource\Widgets\StatsOverview;
 use App\Models\Orders;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class OrdersResource extends Resource
 {
     protected static ?string $model = Orders::class;
 
-    protected static ?string $label = 'Ordem de Serviço';
+    protected static  ?string $label = 'Serviço';
+
+    protected static ?string $navigationGroup = 'Ordens';
+
+    protected static ?string $recordTitleAttribute = 'order_number';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -28,21 +33,34 @@ class OrdersResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('order_number')
-                    ->required(),
 
-                Forms\Components\Select::make('status')
+                Forms\Components\ToggleButtons::make('status')
+                    ->inline()
+                    ->columns(6)
+                    ->default('new')
                     ->options([
-                        'pending' => 'Pending',
-                        'processing' => 'Processing',
-                        'completed' => 'Completed',
-                        'cancelled' => 'Cancelled',
+                        'new' => 'Novo',
+                        'processing' => 'Processando',
+                        'shipped' => 'Enviado',
+                        'delivered' => 'Entregue',
+                        'cancelled' => 'Cancelado',
+                    ])
+                    ->icons([
+                        'new' => 'heroicon-o-information-circle',
+                        'processing' => 'heroicon-o-clock',
+                        'shipped' => 'heroicon-o-truck',
+                        'delivered' => 'heroicon-o-check',
+                        'cancelled' => 'heroicon-o-x-circle',
                     ])
                     ->required(),
 
                 Forms\Components\TextInput::make('total')
-                    ->required()
-                    ->numeric(),
+                    ->columns(2)
+                    ->required(),
+
+                Forms\Components\RichEditor::make('description')
+                    ->hint('Translatable')
+                    ->hintColor('primary')
             ]);
     }
 
@@ -51,70 +69,86 @@ class OrdersResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('order_number')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('status')
-                    ->badge(),
+                    ->label('Número da ordem')
+                    ->searchable()
+                    ->toggleable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('total')
-                    ->numeric()
+                    ->label('Total')
+                    ->money('BRL')
+                    ->searchable()
+                    ->toggleable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'new' => 'primary',
+                        'processing' => 'info',
+                        'shipped' => 'warning',
+                        'delivered' => 'success',
+                        'cancelled' => 'danger',
+                    })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'new' => 'heroicon-o-information-circle',
+                        'processing' => 'heroicon-o-clock',
+                        'shipped' => 'heroicon-o-truck',
+                        'delivered' => 'heroicon-o-check',
+                        'cancelled' => 'heroicon-o-x-circle',
+                    })
+                    ->searchable()
+                    ->toggleable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                Tables\Filters\TrashedFilter::make(),
+                    ->label('Criado em')
+                    ->toggleable()
+                    ->dateTime(format: 'd/m/Y H:i')
+                    ->sortable(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make()
+                ]),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
                 ]),
-            ])
-            ->groupedBulkActions([
-                Tables\Actions\DeleteBulkAction::make()
-                    ->action(function () {
-                        Notification::make()
-                            ->title('Now, now, don\'t be cheeky, leave some records for others to play with!')
-                            ->warning()
-                            ->send();
-                    }),
+                ExportBulkAction::make()
             ])
             ->groups([
                 Tables\Grouping\Group::make('created_at')
-                    ->label('Order Date')
-                    ->date()
+                    ->label('Criado em')
+                    ->date('d/m/Y')
                     ->collapsible(),
+            ])
+            ->emptyStateIcon('heroicon-o-users')
+            ->emptyStateHeading('Nenhum pedido encontrado')
+            ->emptyStateDescription('Crie um novo pedido clicando no botão abaixo')
+            ->emptyStateActions([
+                Action::make('create')
+                    ->label('Criar pedido')
+                    ->icon('heroicon-m-plus')
+                    ->url('orders/create')
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListOrders::route('/'),
+            'create' => Pages\CreateOrders::route('/create'),
+            'edit' => Pages\EditOrders::route('/{record}/edit'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
     }
 }

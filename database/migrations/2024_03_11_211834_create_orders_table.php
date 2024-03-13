@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('order_number', 15);
-            $table->enum('status', ['pending', 'processing', 'completed', 'declined']);
+            $table->string('order_number', 15)->nullable();
+            $table->enum('status', ['new', 'processing', 'shipped', 'delivered', 'cancelled']);
             $table->decimal('total', 10, 2);
+            $table->longText('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
