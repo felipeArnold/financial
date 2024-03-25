@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('phones', function (Blueprint $table) {
             $table->id();
-            $table->string('number', 15);
             $table->morphs('phonable');
+            $table->string('number', 15);
             $table->timestamps();
         });
     }

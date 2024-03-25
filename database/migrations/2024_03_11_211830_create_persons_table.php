@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('people', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50);
-            $table->enum('type', ["physical","legal"]);
+            $table->enum('type', ["physical", "legal"]);
             $table->string('surname', 50);
             $table->string('document', 14);
             $table->date('birth_date');
+            $table->string('nationality', 50)->nullable();
+            $table->string('naturalness', 50)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
