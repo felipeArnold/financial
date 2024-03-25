@@ -21,8 +21,7 @@ class Addresses extends Model
         'district',
         'city',
         'state',
-        'country',
-        'zip_code',
+        'postal_code',
         'morphs',
     ];
 

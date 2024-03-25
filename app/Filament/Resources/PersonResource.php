@@ -72,11 +72,11 @@ class PersonResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nome')
-                    ->description(fn($record) => $record->surname)
+                    ->description(fn($record) => $record->document)
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('document')
-                    ->label('CPF/CNPJ')
+                Tables\Columns\TextColumn::make('surname')
+                    ->label('Apelido')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('birth_date')
@@ -123,7 +123,9 @@ class PersonResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\AddressesRelationManager::class,
+            RelationManagers\PhonesRelationManager::class,
+            RelationManagers\EmailsRelationManager::class,
         ];
     }
 

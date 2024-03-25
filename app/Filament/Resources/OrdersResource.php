@@ -15,6 +15,7 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Leandrocfe\FilamentPtbrFormFields\Money;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class OrdersResource extends Resource
@@ -33,10 +34,9 @@ class OrdersResource extends Resource
     {
         return $form
             ->schema([
-
                 Forms\Components\ToggleButtons::make('status')
                     ->inline()
-                    ->columns(6)
+                    ->columns(8)
                     ->default('new')
                     ->options([
                         'new' => 'Novo',
@@ -53,13 +53,10 @@ class OrdersResource extends Resource
                         'cancelled' => 'heroicon-o-x-circle',
                     ])
                     ->required(),
-
-                Forms\Components\TextInput::make('total')
-                    ->columns(2)
+                Money::make('total')
+                    ->columns(1)
                     ->required(),
-
                 Forms\Components\RichEditor::make('description')
-                    ->hint('Translatable')
                     ->hintColor('primary')
             ]);
     }

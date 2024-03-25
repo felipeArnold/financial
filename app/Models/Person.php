@@ -15,19 +15,7 @@ class Person extends Model
     use HasFactory;
     use SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'name',
-        'type',
-        'surname',
-        'document',
-        'birth_date',
-        'deleted_at',
-    ];
+    protected $guarded = ['id'];
 
     /**
      * The attributes that should be cast to native types.
@@ -35,12 +23,21 @@ class Person extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'integer',
         'birth_date' => 'date',
     ];
 
     public function phones(): MorphMany
     {
         return $this->morphMany(Phones::class, 'phonable');
+    }
+
+    public function addresses(): MorphMany
+    {
+        return $this->morphMany(Addresses::class, 'addressable');
+    }
+
+    public function emails(): MorphMany
+    {
+        return $this->morphMany(Emails::class, 'emailable');
     }
 }
