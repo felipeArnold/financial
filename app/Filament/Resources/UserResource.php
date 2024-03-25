@@ -29,14 +29,21 @@ class UserResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Nome')
                     ->required(),
                 Forms\Components\TextInput::make('email')
+                    ->label('E-mail')
                     ->email()
                     ->required(),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
                 Forms\Components\TextInput::make('password')
+                    ->label('Senha')
                     ->password()
                     ->required(),
+                Forms\Components\TextInput::make('password_confirmation')
+                    ->label('Confirme a senha')
+                    ->password()
+                    ->required(),
+
             ]);
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Custumer;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +14,9 @@ return new class extends Migration
     {
         Schema::create('people', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Custumer::class);
             $table->string('name', 50);
-            $table->enum('type', ["physical", "legal"]);
+            $table->enum('type', ["P", "L"])->default("P");
             $table->string('surname', 50);
             $table->string('document', 14);
             $table->date('birth_date');

@@ -111,7 +111,6 @@ class OrdersResource extends Resource
                     EditAction::make(),
                     DeleteAction::make()
                 ]),
-
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

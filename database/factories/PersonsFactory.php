@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use App\Models\People;
+use App\Models\Person;
 
 class PersonsFactory extends Factory
 {
@@ -13,7 +13,7 @@ class PersonsFactory extends Factory
      *
      * @var string
      */
-    protected $model = People::class;
+    protected $model = Person::class;
 
     /**
      * Define the model's default state.

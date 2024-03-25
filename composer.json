@@ -15,6 +15,7 @@
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.8",
+        "leandrocfe/filament-ptbr-form-fields": "^3.0",
         "pxlrbt/filament-excel": "^2.3"
     },
     "require-dev": {
