@@ -36,7 +36,6 @@ class AppPanelProvider extends PanelProvider
             ->profile()
             ->databaseNotifications()
             ->databaseNotificationsPolling('60s')
-            ->brandName('Sistema Financeiro')
             ->sidebarCollapsibleOnDesktop()
             ->colors([
                 'primary' => Color::Indigo,

@@ -26,6 +26,7 @@ class AddressesRelationManager extends RelationManager
             ->schema([
                 Cep::make('postal_code')
                     ->label('CEP')
+                    ->live(onBlur: true)
                     ->viaCep(
                         mode: 'suffix',
                         errorMessage: 'CEP inválido.',

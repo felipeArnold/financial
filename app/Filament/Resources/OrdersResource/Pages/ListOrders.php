@@ -30,21 +30,27 @@ class ListOrders extends ListRecords
         return [
             null => Tab::make('Todos')
                 ->icon('heroicon-o-rectangle-stack'),
-            'Novos' => Tab::make()
-                ->icon('heroicon-o-information-circle')
-                ->query(fn ($query) => $query->where('status', 'new')),
-            'Processando' => Tab::make()
-                ->icon('heroicon-o-clock')
-                ->query(fn ($query) => $query->where('status', 'processing')),
-            'Enviado' => Tab::make()
-                ->icon('heroicon-o-truck')
-                ->query(fn ($query) => $query->where('status', 'shipped')),
-            'Entregue' => Tab::make()
-                ->icon('heroicon-o-check')
-                ->query(fn ($query) => $query->where('status', 'delivered')),
+            'Orçamento' => Tab::make()
+                ->icon('heroicon-o-document')
+                ->query(fn ($query) => $query->where('status', 'budget')),
+            'Aberto' => Tab::make()
+                ->icon('heroicon-o-document-duplicate')
+                ->query(fn ($query) => $query->where('status', 'open')),
+            'Em andamento' => Tab::make()
+                ->icon('heroicon-o-cog')
+                ->query(fn ($query) => $query->where('status', 'progress')),
+            'Finalizado' => Tab::make()
+                ->icon('heroicon-o-check-circle')
+                ->query(fn ($query) => $query->where('status', 'finished')),
             'Cancelado' => Tab::make()
                 ->icon('heroicon-o-x-circle')
-                ->query(fn ($query) => $query->where('status', 'cancelled')),
+                ->query(fn ($query) => $query->where('status', 'canceled')),
+            'Aguardando' => Tab::make()
+                ->icon('heroicon-o-clock')
+                ->query(fn ($query) => $query->where('status', 'waiting')),
+            'Aprovado' => Tab::make()
+                ->icon('heroicon-o-check')
+                ->query(fn ($query) => $query->where('status', 'approved')),
         ];
     }
 }

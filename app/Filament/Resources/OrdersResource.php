@@ -5,10 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OrdersResource\Pages;
 use App\Filament\Resources\OrdersResource\RelationManagers;
 use App\Models\Orders;
-use App\Models\Product;
-use Filament\Forms;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -18,7 +14,6 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Leandrocfe\FilamentPtbrFormFields\Money;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class OrdersResource extends Resource
@@ -35,59 +30,7 @@ class OrdersResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('person_id')
-                    ->label('Produto')
-                    ->options([
-                        'draft' => 'Draft',
-                        'reviewing' => 'Reviewing',
-                        'published' => 'Published',
-                    ])
-                    ->searchable()
-                    ->native(false),
-                Money::make('total')
-                    ->columns(1)
-                    ->required(),
-                Forms\Components\Select::make('person_id')
-                    ->label('Pessoa')
-                    ->options([
-                        'draft' => 'Draft',
-                        'reviewing' => 'Reviewing',
-                        'published' => 'Published',
-                    ])
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('name')
-                            ->label('Name')
-                            ->required(),
-                        Forms\Components\TextInput::make('email')
-                            ->label('Email')
-                            ->required(),
-                    ])
-                    ->searchable()
-                    ->native(false),
-                Forms\Components\ToggleButtons::make('status')
-                    ->inline()
-                    ->columns(8)
-                    ->default('new')
-                    ->options([
-                        'new' => 'Novo',
-                        'processing' => 'Processando',
-                        'shipped' => 'Enviado',
-                        'delivered' => 'Entregue',
-                        'cancelled' => 'Cancelado',
-                    ])
-                    ->icons([
-                        'new' => 'heroicon-o-information-circle',
-                        'processing' => 'heroicon-o-clock',
-                        'shipped' => 'heroicon-o-truck',
-                        'delivered' => 'heroicon-o-check',
-                        'cancelled' => 'heroicon-o-x-circle',
-                    ])
-                    ->required(),
-                Forms\Components\RichEditor::make('description')
-                    ->hintColor('primary')
-            ]);
+        return $form->schema(Orders::getForm());
     }
 
     public static function table(Table $table): Table
@@ -95,13 +38,31 @@ class OrdersResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('order_number')
-                    ->label('Número da ordem')
+                    ->label('Nº da ordem')
                     ->searchable()
                     ->toggleable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('total')
-                    ->label('Total')
-                    ->money('BRL')
+                Tables\Columns\TextColumn::make('person.name')
+                    ->label('Cliente')
+                    ->searchable()
+                    ->toggleable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Responsável')
+                    ->searchable()
+                    ->toggleable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Tipo')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'service' => 'primary',
+                        'sale' => 'success',
+                    })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'service' => 'heroicon-o-cog',
+                        'sale' => 'heroicon-o-shopping-cart',
+                    })
                     ->searchable()
                     ->toggleable()
                     ->sortable(),
@@ -109,21 +70,35 @@ class OrdersResource extends Resource
                     ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'new' => 'primary',
-                        'processing' => 'info',
-                        'shipped' => 'warning',
-                        'delivered' => 'success',
-                        'cancelled' => 'danger',
+                        'budget' => 'primary',
+                        'open' => 'info',
+                        'progress' => 'warning',
+                        'finished' => 'success',
+                        'canceled' => 'danger',
+                        'waiting' => 'warning',
+                        'approved' => 'success',
                     })
                     ->icon(fn (string $state): string => match ($state) {
-                        'new' => 'heroicon-o-information-circle',
-                        'processing' => 'heroicon-o-clock',
-                        'shipped' => 'heroicon-o-truck',
-                        'delivered' => 'heroicon-o-check',
-                        'cancelled' => 'heroicon-o-x-circle',
+                        'budget' => 'heroicon-o-document',
+                        'open' => 'heroicon-o-document-duplicate',
+                        'progress' => 'heroicon-o-cog',
+                        'finished' => 'heroicon-o-check',
+                        'canceled' => 'heroicon-o-x-circle',
+                        'waiting' => 'heroicon-o-clock',
+                        'approved' => 'heroicon-o-check-circle',
                     })
                     ->searchable()
                     ->toggleable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('initial_date')
+                    ->label('Data inicial')
+                    ->toggleable()
+                    ->date(format: 'd/m/Y')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('final_date')
+                    ->label('Data final')
+                    ->toggleable()
+                    ->date(format: 'd/m/Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Criado em')
@@ -131,11 +106,22 @@ class OrdersResource extends Resource
                     ->dateTime(format: 'd/m/Y H:i')
                     ->sortable(),
             ])
+            ->filters([
+                Tables\Filters\SelectFilter::make('type')
+                    ->options([
+                        'service' => 'Serviço',
+                        'sale' => 'Venda',
+                    ])
+                    ->label('Tipo')
+                    ->placeholder('Todos')
+                    ->searchable()
+                    ->native(),
+            ])
             ->actions([
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
-                    DeleteAction::make()
+                    DeleteAction::make(),
                 ]),
             ])
             ->bulkActions([
@@ -164,7 +150,6 @@ class OrdersResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
         ];
     }
 

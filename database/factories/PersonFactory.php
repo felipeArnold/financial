@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use App\Models\Person;
 
-class PersonsFactory extends Factory
+class PersonFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
@@ -22,7 +22,7 @@ class PersonsFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
-            'type' => $this->faker->randomElement(["physical","legal"]),
+            'type' => $this->faker->randomElement(["P","L"]),
             'surname' => $this->faker->regexify('[A-Za-z0-9]{50}'),
             'document' => $this->faker->regexify('[A-Za-z0-9]{14}'),
             'birth_date' => $this->faker->date(),

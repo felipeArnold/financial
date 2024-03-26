@@ -18,7 +18,9 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $label = 'Usúarios';
+    protected static ?string $modelLabel = 'Equipe';
+
+    protected static ?string $pluralLabel = 'Equipe';
 
     protected static ?string $navigationGroup = 'Configurações';
 
@@ -33,21 +35,20 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\Layout\Stack::make([
+                    Tables\Columns\ImageColumn::make('avatar')
+                        ->columnSpan(3)
+                        ->circular(),
+                    Tables\Columns\TextColumn::make('name')
+                        ->columnSpan(9)
+                        ->searchable(),
+                    Tables\Columns\TextColumn::make('email')
+                        ->searchable(),
+                ])
+            ])
+            ->contentGrid([
+                'md' => 2,
+                'xl' => 3,
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),

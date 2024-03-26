@@ -9,11 +9,13 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "bezhansalleh/filament-exceptions": "^2.1",
         "filament/filament": "^3.2",
         "filament/widgets": "^3.2",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
+        "laravel/telescope": "^5.0",
         "laravel/tinker": "^2.8",
         "leandrocfe/filament-ptbr-form-fields": "^3.0",
         "pxlrbt/filament-excel": "^2.3"
