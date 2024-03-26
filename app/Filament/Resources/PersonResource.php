@@ -29,41 +29,7 @@ class PersonResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->label('Nome')
-                    ->rules([
-                        'required',
-                        'max:50'
-                    ])
-                    ->required(),
-                Forms\Components\TextInput::make('surname')
-                    ->label('Apelido')
-                    ->rules([
-                        'nullable',
-                        'max:50'
-                    ]),
-                Document::make('document')
-                    ->label('CPF/CNPJ')
-                    ->dynamic()
-                    ->required(),
-                Forms\Components\DatePicker::make('birth_date')
-                    ->label('Data de nascimento')
-                    ->required(),
-                Forms\Components\TextInput::make('nationality')
-                    ->label('Nacionalidade')
-                    ->rules([
-                        'nullable',
-                        'max:50'
-                    ]),
-                Forms\Components\TextInput::make('naturalness')
-                    ->label('Naturalidade')
-                    ->rules([
-                        'nullable',
-                        'max:50'
-                    ]),
-            ]);
+        return $form->schema(Person::getForm());
     }
 
     public static function table(Table $table): Table

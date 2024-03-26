@@ -8,6 +8,8 @@ class UserObserver
 {
     public function creating(User $user): void
     {
-        $user->custumer_id = auth()->user()->custumer_id;
+        if (auth()->check()) {
+            $user->custumer_id = auth()->user()->custumer_id;
+        }
     }
 }

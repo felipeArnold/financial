@@ -5,7 +5,10 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OrdersResource\Pages;
 use App\Filament\Resources\OrdersResource\RelationManagers;
 use App\Models\Orders;
+use App\Models\Product;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -34,6 +37,35 @@ class OrdersResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Select::make('person_id')
+                    ->label('Produto')
+                    ->options([
+                        'draft' => 'Draft',
+                        'reviewing' => 'Reviewing',
+                        'published' => 'Published',
+                    ])
+                    ->searchable()
+                    ->native(false),
+                Money::make('total')
+                    ->columns(1)
+                    ->required(),
+                Forms\Components\Select::make('person_id')
+                    ->label('Pessoa')
+                    ->options([
+                        'draft' => 'Draft',
+                        'reviewing' => 'Reviewing',
+                        'published' => 'Published',
+                    ])
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Name')
+                            ->required(),
+                        Forms\Components\TextInput::make('email')
+                            ->label('Email')
+                            ->required(),
+                    ])
+                    ->searchable()
+                    ->native(false),
                 Forms\Components\ToggleButtons::make('status')
                     ->inline()
                     ->columns(8)
@@ -52,9 +84,6 @@ class OrdersResource extends Resource
                         'delivered' => 'heroicon-o-check',
                         'cancelled' => 'heroicon-o-x-circle',
                     ])
-                    ->required(),
-                Money::make('total')
-                    ->columns(1)
                     ->required(),
                 Forms\Components\RichEditor::make('description')
                     ->hintColor('primary')

@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Observers\UserObserver;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Filament\Forms;
 
 #[ObservedBy([UserObserver::class])]
 class User extends Authenticatable
@@ -47,4 +49,28 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public static function getForm(): array
+    {
+        return [
+            Section::make('Informações do usuário')
+                ->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->label('Nome')
+                        ->required(),
+                    Forms\Components\TextInput::make('email')
+                        ->label('E-mail')
+                        ->email()
+                        ->required(),
+                    Forms\Components\TextInput::make('password')
+                        ->label('Senha')
+                        ->password()
+                        ->required(),
+                    Forms\Components\TextInput::make('password_confirmation')
+                        ->label('Confirme a senha')
+                        ->password()
+                        ->required(),
+                ])->columns(),
+        ];
+    }
 }
