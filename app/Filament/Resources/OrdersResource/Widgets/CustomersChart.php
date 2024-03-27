@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources\OrdersResource\Widgets;
 
+use App\Models\Orders;
 use Filament\Widgets\ChartWidget;
 
 class CustomersChart extends ChartWidget
 {
-    protected static ?string $heading = 'Total customers';
+    protected static ?string $heading = 'Valor ordens';
 
     protected static ?int $sort = 2;
 
@@ -17,15 +18,24 @@ class CustomersChart extends ChartWidget
 
     protected function getData(): array
     {
+
+        $ordens = Orders::query()
+            ->get()
+            ->groupBy(function ($order) {
+                return $order->created_at->format('m');
+            });
+
         return [
             'datasets' => [
                 [
-                    'label' => 'Customers',
-                    'data' => [4344, 5676, 6798, 7890, 8987, 9388, 10343, 10524, 13664, 14345, 15753, 17332],
+                    'label' => 'Ordens',
+                    'data' => $ordens->map(function ($orders) {
+                        return $orders->sum('total');
+                    })->toArray(),
                     'fill' => 'start',
                 ],
             ],
-            'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            'labels' => ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
         ];
     }
 }

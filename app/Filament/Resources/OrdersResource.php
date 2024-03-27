@@ -2,10 +2,15 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\OrderResource\Pages\ViewOrder;
 use App\Filament\Resources\OrdersResource\Pages;
 use App\Filament\Resources\OrdersResource\RelationManagers;
 use App\Models\Orders;
+use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
@@ -20,13 +25,11 @@ class OrdersResource extends Resource
 {
     protected static ?string $model = Orders::class;
 
-    protected static  ?string $label = 'Serviço';
-
-    protected static ?string $navigationGroup = 'Ordens';
+    protected static  ?string $label = 'Ordens';
 
     protected static ?string $recordTitleAttribute = 'order_number';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
 
     public static function form(Form $form): Form
     {
@@ -90,6 +93,11 @@ class OrdersResource extends Resource
                     ->searchable()
                     ->toggleable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('total')
+                    ->label('Total')
+                    ->toggleable()
+                    ->money()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('initial_date')
                     ->label('Data inicial')
                     ->toggleable()
@@ -147,6 +155,107 @@ class OrdersResource extends Resource
             ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        $typeOrder = $infolist->record->type == 'service' ? 'serviço' : 'venda';
+
+        return $infolist->schema([
+            \Filament\Infolists\Components\Section::make('Ordem de ' . $typeOrder)
+                ->description('Informações sobre a ordem de ' . $typeOrder)
+                ->collapsible()
+                ->schema([
+
+                    \Filament\Infolists\Components\Group::make([
+                        TextEntry::make('order_number')
+                            ->label('Nº da ordem'),
+                        TextEntry::make('total')
+                            ->label('Total')
+                            ->money(),
+                        TextEntry::make('type')
+                            ->label('Tipo')
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'service' => 'primary',
+                                'sale' => 'success',
+                            })
+                            ->icon(fn (string $state): string => match ($state) {
+                                'service' => 'heroicon-o-cog',
+                                'sale' => 'heroicon-o-shopping-cart',
+                            }),
+                        TextEntry::make('status')
+                            ->label('Status')
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'budget' => 'primary',
+                                'open' => 'info',
+                                'progress' => 'warning',
+                                'finished' => 'success',
+                                'canceled' => 'danger',
+                                'waiting' => 'warning',
+                                'approved' => 'success',
+                            })
+                            ->icon(fn (string $state): string => match ($state) {
+                                'budget' => 'heroicon-o-document',
+                                'open' => 'heroicon-o-document-duplicate',
+                                'progress' => 'heroicon-o-cog',
+                                'finished' => 'heroicon-o-check',
+                                'canceled' => 'heroicon-o-x-circle',
+                                'waiting' => 'heroicon-o-clock',
+                                'approved' => 'heroicon-o-check-circle',
+                            }),
+                        TextEntry::make('person.name')
+                            ->label('Cliente'),
+                        TextEntry::make('user.name')
+                            ->label('Responsável'),
+                        TextEntry::make('initial_date')
+                            ->label('Data de início')
+                            ->date(format: 'd/m/Y'),
+                        TextEntry::make('final_date')
+                            ->label('Data final')
+                            ->date(format: 'd/m/Y'),
+                    ])->columns(2),
+
+                ]),
+            \Filament\Infolists\Components\Section::make('Descrição')
+                ->description('Descrição da ordem de ' . $typeOrder)
+                ->collapsible()
+                ->schema([
+                    TextEntry::make('description')
+                        ->hiddenLabel()
+                        ->html()
+                ]),
+            \Filament\Infolists\Components\Section::make('Observação')
+                ->description('Observações sobre a ordem de ' . $typeOrder)
+                ->collapsible()
+                ->schema([
+                    TextEntry::make('observation')
+                        ->hiddenLabel()
+                        ->html()
+                ]),
+            \Filament\Infolists\Components\Section::make('Nota')
+                ->description('Notas sobre a ordem de ' . $typeOrder)
+                ->collapsible()
+                ->schema([
+                    TextEntry::make('note')
+                        ->hiddenLabel()
+                        ->html()
+                ]),
+            \Filament\Infolists\Components\Section::make('Histórico')
+                ->description('Histórico da ordem de ' . $typeOrder)
+                ->collapsible()
+                ->schema([
+                    \Filament\Infolists\Components\Group::make([
+                        TextEntry::make('created_at')
+                            ->label('Criado em')
+                            ->dateTime(format: 'd/m/Y H:i'),
+                        TextEntry::make('updated_at')
+                            ->label('Atualizado em')
+                            ->dateTime(format: 'd/m/Y H:i'),
+                    ])->columns(2),
+                ]),
+        ]);
+    }
+
     public static function getRelations(): array
     {
         return [
@@ -159,6 +268,7 @@ class OrdersResource extends Resource
             'index' => Pages\ListOrders::route('/'),
             'create' => Pages\CreateOrders::route('/create'),
             'edit' => Pages\EditOrders::route('/{record}/edit'),
+            'view' => Pages\ViewOrders::route('/{record}'),
         ];
     }
 }

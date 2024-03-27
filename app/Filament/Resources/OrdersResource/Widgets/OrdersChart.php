@@ -6,26 +6,33 @@ use Filament\Widgets\ChartWidget;
 
 class OrdersChart extends ChartWidget
 {
-    protected static ?string $heading = 'Orders per month';
+
+    protected static ?string $heading = 'Ordens por mês';
 
     protected static ?int $sort = 1;
 
     protected function getType(): string
     {
-        return 'line';
+        return 'bar';
     }
 
     protected function getData(): array
     {
+        $orders = \App\Models\Orders::all()->groupBy(function ($order) {
+            return $order->created_at->format('m');
+        });
+
         return [
             'datasets' => [
                 [
-                    'label' => 'Orders',
-                    'data' => [2433, 3454, 4566, 3300, 5545, 5765, 6787, 8767, 7565, 8576, 9686, 8996],
+                    'label' => 'Serviços',
+                    'data' => $orders->map(function ($orders) {
+                        return $orders->count();
+                    })->toArray(),
                     'fill' => 'start',
                 ],
             ],
-            'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            'labels' => ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
         ];
     }
 }

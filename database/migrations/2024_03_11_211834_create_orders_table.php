@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class);
             $table->enum('type', ['service', 'sale']);
             $table->enum('status', ['budget', 'open', 'progress', 'finished', 'canceled', 'waiting', 'approved'])->default('budget');
+            $table->decimal('total', 10, 2)->default(0.00);
             $table->date('initial_date')->nullable();
             $table->date('final_date')->nullable();
             $table->text('description')->nullable();

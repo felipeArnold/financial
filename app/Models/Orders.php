@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Filament\Forms;
+use Leandrocfe\FilamentPtbrFormFields\Money;
 
 #[ObservedBy(OrdersObserver::class)]
 class Orders extends Model
@@ -67,33 +68,36 @@ class Orders extends Model
                             'service' => 'primary',
                             'sale' => 'success',
                         ])
-                        ->columnSpan([3])
-                        ->grouped()
+                        ->required()
+                        ->columnSpan(1)
                         ->default('service'),
+                    Money::make('total')
+                        ->label('Valor total')
+                        ->required()
+                        ->columnSpan(1),
                     Forms\Components\ToggleButtons::make('status')
-                        ->inline()
-                        ->columnSpan([9])
-                        ->default('budget')
-                        ->options([
-                            'budget' => 'Orçamento',
-                            'open' => 'Aberto',
-                            'progress' => 'Em andamento',
-                            'finished' => 'Finalizado',
-                            'canceled' => 'Cancelado',
-                            'waiting' => 'Aguardando',
-                            'approved' => 'Aprovado',
-                        ])
-                        ->icons([
-                            'budget' => 'heroicon-o-document',
-                            'open' => 'heroicon-o-document-duplicate',
-                            'progress' => 'heroicon-o-cog',
-                            'finished' => 'heroicon-o-check-circle',
-                            'canceled' => 'heroicon-o-x-circle',
-                            'waiting' => 'heroicon-o-clock',
-                            'approved' => 'heroicon-o-check',
-                        ])
-                        ->grouped()
-                        ->required(),
+                            ->inline()
+                            ->default('budget')
+                            ->options([
+                                'budget' => 'Orçamento',
+                                'open' => 'Aberto',
+                                'progress' => 'Em andamento',
+                                'finished' => 'Finalizado',
+                                'canceled' => 'Cancelado',
+                                'waiting' => 'Aguardando',
+                                'approved' => 'Aprovado',
+                            ])
+                            ->icons([
+                                'budget' => 'heroicon-o-document',
+                                'open' => 'heroicon-o-document-duplicate',
+                                'progress' => 'heroicon-o-cog',
+                                'finished' => 'heroicon-o-check-circle',
+                                'canceled' => 'heroicon-o-x-circle',
+                                'waiting' => 'heroicon-o-clock',
+                                'approved' => 'heroicon-o-check',
+                            ])
+                            ->columnSpan(2)
+                            ->required(),
                     Forms\Components\Select::make('person_id')
                         ->label('Cliente')
                         ->options(Person::all()->pluck('name', 'id'))
