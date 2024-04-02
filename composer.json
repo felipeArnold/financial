@@ -21,6 +21,7 @@
         "pxlrbt/filament-excel": "^2.3"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.12",
         "fakerphp/faker": "^1.9.1",
         "laravel-shift/blueprint": "^2.9",
         "laravel/pint": "^1.0",

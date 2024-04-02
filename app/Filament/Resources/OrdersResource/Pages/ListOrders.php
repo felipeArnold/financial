@@ -25,6 +25,7 @@ class ListOrders extends ListRecords
     {
         return OrdersResource::getWidgets();
     }
+
     public function getTabs(): array
     {
         return [

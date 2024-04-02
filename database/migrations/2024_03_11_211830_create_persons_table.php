@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignIdFor(Custumer::class);
             $table->string('name', 50);
             $table->enum('type', ["P", "L"])->default("P");
-            $table->string('surname', 50);
+            $table->string('surname', 50)->nullable();
             $table->string('document', 14);
             $table->date('birth_date');
             $table->string('nationality', 50)->nullable();

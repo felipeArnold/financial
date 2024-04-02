@@ -66,7 +66,8 @@ class UserResource extends Resource
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
                 ExportBulkAction::make()
-            ]);
+            ])
+            ->paginated(false);
     }
 
     public static function getPages(): array
