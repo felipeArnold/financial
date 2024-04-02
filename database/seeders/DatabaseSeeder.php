@@ -27,7 +27,11 @@ class DatabaseSeeder extends Seeder
              'name' => 'Felipe Arnold',
              'email' => 'felipe@example.com',
              'password' => bcrypt('password'),
+             'avatar' => 'https://via.placeholder.com/150'
          ]);
 
+        Person::factory(10)->create([
+            'custumer_id' => $custumer->id,
+        ]);
     }
 }

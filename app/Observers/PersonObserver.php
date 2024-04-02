@@ -9,7 +9,9 @@ class PersonObserver
 
     public function creating(Person $person): void
     {
-        $person->custumer_id = auth()->user()->custumer_id;
+        if (auth()->check()) {
+            $person->custumer_id = auth()->user()->custumer_id;
+        }
 
     }
 }
