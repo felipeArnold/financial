@@ -5,12 +5,15 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OrderResource\Pages\ViewOrder;
 use App\Filament\Resources\OrdersResource\Pages;
 use App\Filament\Resources\OrdersResource\RelationManagers;
+use App\Models\AccountsReceive;
+use App\Models\AccountsReceiveInstallments;
 use App\Models\Orders;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
@@ -20,6 +23,7 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use Tapp\FilamentAuditing\RelationManagers\AuditsRelationManager;
 
 class OrdersResource extends Resource
 {
@@ -96,7 +100,7 @@ class OrdersResource extends Resource
                 Tables\Columns\TextColumn::make('total')
                     ->label('Total')
                     ->toggleable()
-                    ->money()
+                    ->money('BRL')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('initial_date')
                     ->label('Data inicial')
@@ -134,6 +138,35 @@ class OrdersResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('generate_account_receivable')
+                        ->label('Gerar contas a receber')
+                        ->icon('heroicon-o-currency-dollar')
+                        ->requiresConfirmation()
+                        ->action(function ($records) {
+                            foreach ($records as $record) {
+                                $accountReceivable = AccountsReceive::create([
+                                    'person_id' => $record->person_id,
+                                    'user_id' => $record->user_id,
+                                    'description' => $record->description,
+                                    'title' => $record->order_number,
+                                    'status' => 'open',
+                                ]);
+
+                                $accountReceivable->installments()->create([
+                                    'document_number' => $record->order_number,
+                                    'value' => $record->total,
+                                    'due_date' => $record->initial_date,
+                                    'status' => 'open',
+                                ]);
+                            }
+
+                            return Notification::make()
+                                ->title('Contas a receber geradas')
+                                ->body('As contas a receber foram geradas com sucesso')
+                                ->success()
+                                ->seconds(3)
+                                ->send();
+                        }),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
                 ExportBulkAction::make()
@@ -259,6 +292,7 @@ class OrdersResource extends Resource
     public static function getRelations(): array
     {
         return [
+            AuditsRelationManager::class,
         ];
     }
 

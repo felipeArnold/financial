@@ -19,7 +19,8 @@
         "laravel/tinker": "^2.8",
         "leandrocfe/filament-ptbr-form-fields": "^3.0",
         "mokhosh/filament-kanban": "^2.7",
-        "pxlrbt/filament-excel": "^2.3"
+        "pxlrbt/filament-excel": "^2.3",
+        "tapp/filament-auditing": "^3.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.12",

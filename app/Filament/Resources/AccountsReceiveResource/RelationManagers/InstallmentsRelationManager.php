@@ -116,96 +116,102 @@ class InstallmentsRelationManager extends RelationManager
                     ->getKeyFromRecordUsing(fn ($record) => $record->status)
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
-                    ->options([
-                        'open' => 'Aberto',
-                        'paid' => 'Pago',
-                        'canceled' => 'Cancelado',
-                    ])
-                    ->label('Status')
-                    ->native(),
+
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                Action::make('pay')
-                    ->visible(fn ($record) => $record->status === 'open')
-                    ->label('Pagar')
-                    ->hiddenLabel()
-                    ->icon('heroicon-o-check-circle')
-                    ->tooltip('Marcar como pago')
-                    ->requiresConfirmation()
-                    ->action(
-                        function ($record) {
-
-                            $record->update([
-                                'status' => 'paid',
-                                'pay_date' => now(),
-                                'value_paid' => $record->value
-                            ]);
-
-                            AccountsReceiveInstallments::create([
-                                'accounts_receive_id' => $record->accounts_receive_id,
-                                'parcel' => $record->parcel + 1,
-                                'due_date' => Carbon::parse($record->due_date)->addMonth(),
-                                'pay_date' => null,
-                                'value' => $record->value,
-                                'discount' => $record->discount,
-                                'interest' => $record->interest,
-                                'fine' => $record->fine,
-                                'value_paid' => $record->value_paid,
-                                'status' => 'open',
-                                'observation' => $record->observation
-                            ]);
-
-                            $recipient = auth()->user();
-
-                            Notification::make()
-                                ->title('Parcela paga')
-                                ->body('A parcela foi marcada como paga com sucesso.')
-                                ->success()
-                                ->seconds(3)
-                                ->sendToDatabase($recipient)
-                                ->send();
-                        }
-                    ),
-                Action::make('duplicate')
-                    ->hiddenLabel()
-                    ->icon('heroicon-o-document-duplicate')
-                    ->tooltip('Duplicar parcela')
-                    ->requiresConfirmation()
-                    ->action(
-                        function ($record) {
-
-                            AccountsReceiveInstallments::create([
-                                'accounts_receive_id' => $record->accounts_receive_id,
-                                'parcel' => $record->parcel + 1,
-                                'due_date' => Carbon::parse($record->due_date)->addMonth(),
-                                'pay_date' => null,
-                                'value' => $record->value,
-                                'discount' => $record->discount,
-                                'interest' => $record->interest,
-                                'fine' => $record->fine,
-                                'value_paid' => $record->value_paid,
-                                'status' => 'open',
-                                'observation' => $record->observation
-                            ]);
-
-                            $recipient = auth()->user();
-
-                            Notification::make()
-                                ->title('Parcela duplicada')
-                                ->body('A parcela foi duplicada com sucesso.')
-                                ->success()
-                                ->seconds(3)
-                                ->sendToDatabase($recipient)
-                                ->send();
-                        }
-                    ),
+                ViewAction::make(),
+                EditAction::make(),
                 ActionGroup::make([
-                    ViewAction::make(),
-                    EditAction::make(),
+                    Action::make('duplicate')
+                        ->label('Duplicar parcela')
+                        ->icon('heroicon-o-document-duplicate')
+                        ->requiresConfirmation()
+                        ->action(
+                            function ($record) {
+                                AccountsReceiveInstallments::create([
+                                    'accounts_receive_id' => $record->accounts_receive_id,
+                                    'parcel' => $record->parcel + 1,
+                                    'due_date' => Carbon::parse($record->due_date)->addMonth(),
+                                    'pay_date' => null,
+                                    'value' => $record->value,
+                                    'discount' => $record->discount,
+                                    'interest' => $record->interest,
+                                    'fine' => $record->fine,
+                                    'value_paid' => $record->value_paid,
+                                    'status' => 'open',
+                                    'observation' => $record->observation
+                                ]);
+
+                                Notification::make()
+                                    ->title('Parcela duplicada')
+                                    ->body('A parcela foi duplicada com sucesso.')
+                                    ->success()
+                                    ->seconds(3)
+                                    ->send();
+                            }
+                        ),
+                    Action::make('pay')
+                        ->visible(fn ($record) => $record->status === 'open')
+                        ->icon('heroicon-o-check-circle')
+                        ->label('Marcar como pago')
+                        ->requiresConfirmation()
+                        ->action(
+                            function ($record) {
+
+                                $record->update([
+                                    'status' => 'paid',
+                                    'pay_date' => now(),
+                                    'value_paid' => $record->value
+                                ]);
+
+                                Notification::make()
+                                    ->title('Parcela paga')
+                                    ->body('A parcela foi marcada como paga com sucesso.')
+                                    ->success()
+                                    ->seconds(3)
+                                    ->send();
+                            }
+                        ),
+                    Action::make('pay_and_create_another')
+                        ->visible(fn ($record) => $record->status === 'open')
+                        ->icon('heroicon-o-check-circle')
+                        ->label('Marcar como pago e criar outra')
+                        ->requiresConfirmation()
+                        ->action(
+                            function ($record) {
+
+                                $record->update([
+                                    'status' => 'paid',
+                                    'pay_date' => now(),
+                                    'value_paid' => $record->value
+                                ]);
+
+                                AccountsReceiveInstallments::create([
+                                    'accounts_receive_id' => $record->accounts_receive_id,
+                                    'parcel' => $record->parcel + 1,
+                                    'due_date' => Carbon::parse($record->due_date)->addMonth(),
+                                    'pay_date' => null,
+                                    'value' => $record->value,
+                                    'discount' => $record->discount,
+                                    'interest' => $record->interest,
+                                    'fine' => $record->fine,
+                                    'value_paid' => $record->value_paid,
+                                    'status' => 'open',
+                                    'observation' => $record->observation
+                                ]);
+
+                                Notification::make()
+                                    ->title('Parcela paga')
+                                    ->body('A parcela foi marcada como paga com sucesso.')
+                                    ->success()
+                                    ->seconds(3)
+                                    ->send();
+                            }
+                        ),
+
                     DeleteAction::make(),
                     RestoreAction::make(),
                 ])->tooltip('Ações'),

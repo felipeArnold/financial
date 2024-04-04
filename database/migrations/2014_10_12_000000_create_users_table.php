@@ -14,7 +14,9 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Custumer::class);
+            $table->foreignIdFor(Custumer::class)
+                ->constrained()
+                ->cascadeOnDelete();
             $table->string('avatar')->nullable();
             $table->string('name');
             $table->string('email')->unique();

@@ -23,8 +23,7 @@ class PersonFactory extends Factory
         return [
             'name' => $this->faker->name(),
             'type' => $this->faker->randomElement(["P","L"]),
-            'surname' => $this->faker->regexify('[A-Za-z0-9]{50}'),
-            'document' => $this->faker->regexify('[A-Za-z0-9]{14}'),
+            'surname' => $this->faker->name(),
             'birth_date' => $this->faker->date(),
         ];
     }

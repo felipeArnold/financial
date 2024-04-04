@@ -14,12 +14,14 @@ return new class extends Migration
     {
         Schema::create('people', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Custumer::class);
+            $table->foreignIdFor(Custumer::class)
+                ->constrained()
+                ->cascadeOnDelete();
             $table->string('name', 50);
             $table->enum('type', ["P", "L"])->default("P");
             $table->string('surname', 50)->nullable();
-            $table->string('document', 14);
-            $table->date('birth_date');
+            $table->string('document', 14)->nullable();
+            $table->date('birth_date')->nullable();
             $table->string('nationality', 50)->nullable();
             $table->string('naturalness', 50)->nullable();
             $table->timestamps();

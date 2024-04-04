@@ -5,20 +5,24 @@ namespace App\Enums;
 
 enum OrdersStatusEnum: string
 {
-    case new = 'new';
-    case processing = 'processing';
-    case shipped = 'shipped';
-    case delivered = 'delivered';
-    case cancelled = 'cancelled';
+    case BUDGET = 'budget';
+    case OPEN = 'open';
+    case PROGRESS = 'progress';
+    case FINISHED = 'finished';
+    case CANCELED = 'canceled';
+    case WAITING = 'waiting';
+    case APPROVED = 'approved';
 
-    public function label(): string
+    public function getLabel(): string
     {
         return match ($this) {
-            self::new => 'Novo',
-            self::processing => 'Processando',
-            self::shipped => 'Enviado',
-            self::delivered => 'Entregue',
-            self::cancelled => 'Cancelado',
+            self::BUDGET => 'Orçamento',
+            self::OPEN => 'Aberto',
+            self::PROGRESS => 'Em andamento',
+            self::FINISHED => 'Finalizado',
+            self::CANCELED => 'Cancelado',
+            self::WAITING => 'Aguardando',
+            self::APPROVED => 'Aprovado',
         };
     }
 }

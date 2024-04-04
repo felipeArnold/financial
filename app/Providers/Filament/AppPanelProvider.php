@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\EditProfile;
 use App\Filament\Resources\OrdersResource\Widgets\CustomersChart;
 use App\Filament\Resources\OrdersResource\Widgets\OrdersChart;
 use App\Filament\Resources\OrdersResource\Widgets\StatsOverview;
@@ -33,7 +34,7 @@ class AppPanelProvider extends PanelProvider
             ->registration()
             ->passwordReset()
             ->emailVerification()
-            ->profile()
+            ->profile(EditProfile::class, isSimple:false)
             ->databaseNotifications()
             ->databaseNotificationsPolling('60s')
             ->sidebarCollapsibleOnDesktop()

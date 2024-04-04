@@ -56,8 +56,7 @@ class AccountsReceiveResource extends Resource
             )
             ->join('accounts_receives', 'accounts_receives.id', '=', 'accounts_receive_installments.accounts_receive_id')
             ->join('people', 'people.id', '=', 'accounts_receives.person_id')
-            ->join('users', 'users.id', '=', 'accounts_receives.user_id')
-            ->groupBy('accounts_receives.id');
+            ->join('users', 'users.id', '=', 'accounts_receives.user_id');
 
         $table->query($query);
         return $table
@@ -85,7 +84,7 @@ class AccountsReceiveResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('value')
                     ->label('Valor')
-                    ->money()
+                    ->money('BRL')
                     ->toggleable()
                     ->sortable()
                     ->searchable(),

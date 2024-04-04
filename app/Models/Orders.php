@@ -3,20 +3,26 @@
 namespace App\Models;
 
 use App\Enums\OrdersStatusEnum;
+use App\Models\Scopes\CostumerScope;
 use App\Observers\OrdersObserver;
 use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Filament\Forms;
+use Leandrocfe\FilamentPtbrFormFields\Document;
 use Leandrocfe\FilamentPtbrFormFields\Money;
+use OwenIt\Auditing\Contracts\Auditable;
 
 #[ObservedBy(OrdersObserver::class)]
-class Orders extends Model
+//#[ScopedBy(CostumerScope::class)]
+class Orders extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
     use HasFactory;
     use SoftDeletes;
 
@@ -35,7 +41,6 @@ class Orders extends Model
     protected $casts = [
         'id' => 'integer',
         'total' => 'decimal:2',
-//        'status' => OrdersStatusEnum::class,
     ];
 
     public function person(): BelongsTo
@@ -103,6 +108,12 @@ class Orders extends Model
                         ->options(Person::all()->pluck('name', 'id'))
                         ->searchable()
                         ->required()
+                        ->createOptionForm(function () {
+                            return Person::getForm();
+                        })
+                        ->createOptionUsing(function (array $data): int {
+                            return Person::create($data)->id;
+                        })
                         ->native(false),
                     Forms\Components\Select::make('user_id')
                         ->label('Responsável')
@@ -117,6 +128,7 @@ class Orders extends Model
                     Forms\Components\DatePicker::make('final_date')
                         ->label('Data de término')
                         ->required()
+                        ->default(now()->addDays(5))
                         ->rules('after_or_equal:initial_date'),
                     Forms\Components\MarkdownEditor::make('description')
                         ->label('Descrição'),

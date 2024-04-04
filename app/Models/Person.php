@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\CostumerScope;
 use App\Observers\PersonObserver;
 use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -13,6 +15,7 @@ use Leandrocfe\FilamentPtbrFormFields\Document;
 use Filament\Forms;
 
 #[ObservedBy(PersonObserver::class)]
+#[ScopedBy(CostumerScope::class)]
 class Person extends Model
 {
     use HasFactory;
@@ -64,11 +67,10 @@ class Person extends Model
                         ]),
                     Document::make('document')
                         ->label('CPF/CNPJ')
-                        ->dynamic()
-                        ->required(),
+                        ->dynamic(),
                     Forms\Components\DatePicker::make('birth_date')
                         ->label('Data de nascimento')
-                        ->required(),
+                        ->native(),
                     Forms\Components\TextInput::make('nationality')
                         ->label('Nacionalidade')
                         ->rules([

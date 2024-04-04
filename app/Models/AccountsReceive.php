@@ -15,7 +15,7 @@ use Leandrocfe\FilamentPtbrFormFields\Money;
 class AccountsReceive extends Model
 {
     use HasFactory;
-    
+
     protected $guarded = ['id'];
 
     public function person(): BelongsTo
@@ -44,6 +44,12 @@ class AccountsReceive extends Model
                         ->options(Person::all()->pluck('name', 'id'))
                         ->searchable()
                         ->required()
+                        ->createOptionForm(function () {
+                            return Person::getForm();
+                        })
+                        ->createOptionUsing(function (array $data): int {
+                            return Person::create($data)->id;
+                        })
                         ->native(false),
                     Select::make('user_id')
                         ->label('Responsável')

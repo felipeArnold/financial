@@ -68,13 +68,6 @@ class ProductResource extends Resource
             ->emptyStateDescription('Crie um novo produto para começar');
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [
