@@ -3,10 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PersonResource\Pages;
-use App\Filament\Resources\PersonResource\RelationManagers;
 use App\Models\Person;
 use Filament\Actions\RestoreAction;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -16,7 +14,6 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
-use Leandrocfe\FilamentPtbrFormFields\Document;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class PersonResource extends Resource
@@ -25,7 +22,9 @@ class PersonResource extends Resource
 
     protected static ?string $label = 'Clientes';
 
-    protected static ?string $navigationIcon = 'heroicon-o-user';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Form $form): Form
     {
@@ -38,7 +37,7 @@ class PersonResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nome')
-                    ->description(fn($record) => $record->document)
+                    ->description(fn ($record) => $record->document)
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('surname')
@@ -73,7 +72,7 @@ class PersonResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
-                ExportBulkAction::make()
+                ExportBulkAction::make(),
             ])
             ->emptyStateIcon('heroicon-o-users')
             ->emptyStateHeading('Nenhuma pessoa encontrada')
@@ -82,17 +81,8 @@ class PersonResource extends Resource
                 Action::make('create')
                     ->label('Criar pessoa')
                     ->icon('heroicon-m-plus')
-                    ->url('people/create')
+                    ->url('people/create'),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            RelationManagers\AddressesRelationManager::class,
-            RelationManagers\PhonesRelationManager::class,
-            RelationManagers\EmailsRelationManager::class,
-        ];
     }
 
     public static function getPages(): array

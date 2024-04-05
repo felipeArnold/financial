@@ -5,15 +5,15 @@ namespace App\Models;
 use App\Observers\AccountsReceiveInstallmentsObserver;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 use Leandrocfe\FilamentPtbrFormFields\Money;
-use Psy\Util\Str;
 
 #[ObservedBy(AccountsReceiveInstallmentsObserver::class)]
 class AccountsReceiveInstallments extends Model
@@ -22,7 +22,7 @@ class AccountsReceiveInstallments extends Model
 
     protected $guarded = ['id'];
 
-   public function accountsReceive(): BelongsTo
+    public function accountsReceive(): BelongsTo
     {
         return $this->belongsTo(AccountsReceive::class);
     }
@@ -30,7 +30,9 @@ class AccountsReceiveInstallments extends Model
     public static function getForm(): array
     {
         return [
-            Section::make('Informações do gerais')
+            Repeater::make('installments')
+                ->hiddenLabel()
+                ->relationship()
                 ->schema([
                     DatePicker::make('due_date')
                         ->label('Data de vencimento')
@@ -64,7 +66,10 @@ class AccountsReceiveInstallments extends Model
                         ->label('Observação')
                         ->columnSpan(2),
 
-                ])->columns(),
+                ])
+                ->collapsible()
+                ->cloneable(),
+            //                ->itemLabel(fn (array $state): ?string => 'Parcela ' . Str::padLeft($state['parcel'], 2, '0'))
         ];
     }
 }

@@ -2,14 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\OrderResource\Pages\ViewOrder;
 use App\Filament\Resources\OrdersResource\Pages;
-use App\Filament\Resources\OrdersResource\RelationManagers;
 use App\Models\AccountsReceive;
-use App\Models\AccountsReceiveInstallments;
 use App\Models\Orders;
-use Filament\Forms\Components\Group;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
@@ -17,19 +12,18 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Table;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Table;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
-use Tapp\FilamentAuditing\RelationManagers\AuditsRelationManager;
 
 class OrdersResource extends Resource
 {
     protected static ?string $model = Orders::class;
 
-    protected static  ?string $label = 'Ordens';
+    protected static ?string $label = 'Ordens';
 
     protected static ?string $recordTitleAttribute = 'order_number';
 
@@ -62,38 +56,12 @@ class OrdersResource extends Resource
                 Tables\Columns\TextColumn::make('type')
                     ->label('Tipo')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'service' => 'primary',
-                        'sale' => 'success',
-                    })
-                    ->icon(fn (string $state): string => match ($state) {
-                        'service' => 'heroicon-o-cog',
-                        'sale' => 'heroicon-o-shopping-cart',
-                    })
                     ->searchable()
                     ->toggleable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'budget' => 'primary',
-                        'open' => 'info',
-                        'progress' => 'warning',
-                        'finished' => 'success',
-                        'canceled' => 'danger',
-                        'waiting' => 'warning',
-                        'approved' => 'success',
-                    })
-                    ->icon(fn (string $state): string => match ($state) {
-                        'budget' => 'heroicon-o-document',
-                        'open' => 'heroicon-o-document-duplicate',
-                        'progress' => 'heroicon-o-cog',
-                        'finished' => 'heroicon-o-check',
-                        'canceled' => 'heroicon-o-x-circle',
-                        'waiting' => 'heroicon-o-clock',
-                        'approved' => 'heroicon-o-check-circle',
-                    })
                     ->searchable()
                     ->toggleable()
                     ->sortable(),
@@ -145,6 +113,7 @@ class OrdersResource extends Resource
                         ->action(function ($records) {
                             foreach ($records as $record) {
                                 $accountReceivable = AccountsReceive::create([
+                                    'tenant_id' => $record->tenant_id,
                                     'person_id' => $record->person_id,
                                     'user_id' => $record->user_id,
                                     'description' => $record->description,
@@ -158,6 +127,8 @@ class OrdersResource extends Resource
                                     'due_date' => $record->initial_date,
                                     'status' => 'open',
                                 ]);
+
+                                $record->update(['status' => 'approved']);
                             }
 
                             return Notification::make()
@@ -169,7 +140,7 @@ class OrdersResource extends Resource
                         }),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-                ExportBulkAction::make()
+                ExportBulkAction::make(),
             ])
             ->groups([
                 Tables\Grouping\Group::make('created_at')
@@ -184,7 +155,7 @@ class OrdersResource extends Resource
                 Action::make('create')
                     ->label('Criar pedido')
                     ->icon('heroicon-m-plus')
-                    ->url('orders/create')
+                    ->url('orders/create'),
             ]);
     }
 
@@ -193,49 +164,22 @@ class OrdersResource extends Resource
         $typeOrder = $infolist->record->type == 'service' ? 'serviço' : 'venda';
 
         return $infolist->schema([
-            \Filament\Infolists\Components\Section::make('Ordem de ' . $typeOrder)
-                ->description('Informações sobre a ordem de ' . $typeOrder)
+            \Filament\Infolists\Components\Section::make('Ordem de '.$typeOrder)
+                ->description('Informações sobre a ordem de '.$typeOrder)
                 ->collapsible()
                 ->schema([
-
                     \Filament\Infolists\Components\Group::make([
                         TextEntry::make('order_number')
                             ->label('Nº da ordem'),
                         TextEntry::make('total')
                             ->label('Total')
-                            ->money(),
+                            ->money('BRL'),
                         TextEntry::make('type')
                             ->label('Tipo')
-                            ->badge()
-                            ->color(fn (string $state): string => match ($state) {
-                                'service' => 'primary',
-                                'sale' => 'success',
-                            })
-                            ->icon(fn (string $state): string => match ($state) {
-                                'service' => 'heroicon-o-cog',
-                                'sale' => 'heroicon-o-shopping-cart',
-                            }),
+                            ->badge(),
                         TextEntry::make('status')
                             ->label('Status')
-                            ->badge()
-                            ->color(fn (string $state): string => match ($state) {
-                                'budget' => 'primary',
-                                'open' => 'info',
-                                'progress' => 'warning',
-                                'finished' => 'success',
-                                'canceled' => 'danger',
-                                'waiting' => 'warning',
-                                'approved' => 'success',
-                            })
-                            ->icon(fn (string $state): string => match ($state) {
-                                'budget' => 'heroicon-o-document',
-                                'open' => 'heroicon-o-document-duplicate',
-                                'progress' => 'heroicon-o-cog',
-                                'finished' => 'heroicon-o-check',
-                                'canceled' => 'heroicon-o-x-circle',
-                                'waiting' => 'heroicon-o-clock',
-                                'approved' => 'heroicon-o-check-circle',
-                            }),
+                            ->badge(),
                         TextEntry::make('person.name')
                             ->label('Cliente'),
                         TextEntry::make('user.name')
@@ -250,31 +194,31 @@ class OrdersResource extends Resource
 
                 ]),
             \Filament\Infolists\Components\Section::make('Descrição')
-                ->description('Descrição da ordem de ' . $typeOrder)
+                ->description('Descrição da ordem de '.$typeOrder)
                 ->collapsible()
                 ->schema([
                     TextEntry::make('description')
                         ->hiddenLabel()
-                        ->html()
+                        ->html(),
                 ]),
             \Filament\Infolists\Components\Section::make('Observação')
-                ->description('Observações sobre a ordem de ' . $typeOrder)
+                ->description('Observações sobre a ordem de '.$typeOrder)
                 ->collapsible()
                 ->schema([
                     TextEntry::make('observation')
                         ->hiddenLabel()
-                        ->html()
+                        ->html(),
                 ]),
             \Filament\Infolists\Components\Section::make('Nota')
-                ->description('Notas sobre a ordem de ' . $typeOrder)
+                ->description('Notas sobre a ordem de '.$typeOrder)
                 ->collapsible()
                 ->schema([
                     TextEntry::make('note')
                         ->hiddenLabel()
-                        ->html()
+                        ->html(),
                 ]),
             \Filament\Infolists\Components\Section::make('Histórico')
-                ->description('Histórico da ordem de ' . $typeOrder)
+                ->description('Histórico da ordem de '.$typeOrder)
                 ->collapsible()
                 ->schema([
                     \Filament\Infolists\Components\Group::make([
@@ -287,13 +231,6 @@ class OrdersResource extends Resource
                     ])->columns(2),
                 ]),
         ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            AuditsRelationManager::class,
-        ];
     }
 
     public static function getPages(): array

@@ -4,9 +4,7 @@ namespace App\Filament\Resources\AccountsReceiveResource\RelationManagers;
 
 use App\Models\AccountsReceiveInstallments;
 use Carbon\Carbon;
-use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Components\Tab;
@@ -18,9 +16,6 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
@@ -29,9 +24,8 @@ class InstallmentsRelationManager extends RelationManager
     protected static string $relationship = 'installments';
 
     protected static ?string $label = 'parcela';
+
     protected static ?string $title = 'Parcelas';
-
-
 
     public function form(Form $form): Form
     {
@@ -113,7 +107,7 @@ class InstallmentsRelationManager extends RelationManager
             ])
             ->groups([
                 Tables\Grouping\Group::make('status')
-                    ->getKeyFromRecordUsing(fn ($record) => $record->status)
+                    ->getKeyFromRecordUsing(fn ($record) => $record->status),
             ])
             ->filters([
 
@@ -142,7 +136,7 @@ class InstallmentsRelationManager extends RelationManager
                                     'fine' => $record->fine,
                                     'value_paid' => $record->value_paid,
                                     'status' => 'open',
-                                    'observation' => $record->observation
+                                    'observation' => $record->observation,
                                 ]);
 
                                 Notification::make()
@@ -164,7 +158,7 @@ class InstallmentsRelationManager extends RelationManager
                                 $record->update([
                                     'status' => 'paid',
                                     'pay_date' => now(),
-                                    'value_paid' => $record->value
+                                    'value_paid' => $record->value,
                                 ]);
 
                                 Notification::make()
@@ -186,7 +180,7 @@ class InstallmentsRelationManager extends RelationManager
                                 $record->update([
                                     'status' => 'paid',
                                     'pay_date' => now(),
-                                    'value_paid' => $record->value
+                                    'value_paid' => $record->value,
                                 ]);
 
                                 AccountsReceiveInstallments::create([
@@ -200,7 +194,7 @@ class InstallmentsRelationManager extends RelationManager
                                     'fine' => $record->fine,
                                     'value_paid' => $record->value_paid,
                                     'status' => 'open',
-                                    'observation' => $record->observation
+                                    'observation' => $record->observation,
                                 ]);
 
                                 Notification::make()
@@ -222,7 +216,7 @@ class InstallmentsRelationManager extends RelationManager
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
-                ExportBulkAction::make()
+                ExportBulkAction::make(),
             ])
             ->emptyStateIcon('heroicon-o-credit-card')
             ->emptyStateHeading('Nenhuma parcela encontrada')

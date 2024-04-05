@@ -2,19 +2,14 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\CostumerScope;
-use App\Observers\ProductObserver;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Leandrocfe\FilamentPtbrFormFields\Money;
 
-#[ObservedBy(ProductObserver::class)]
-#[ScopedBy(CostumerScope::class)]
 class Product extends Model
 {
     use HasFactory;
@@ -24,6 +19,11 @@ class Product extends Model
         'price',
         'description',
     ];
+
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
 
     public static function getForm(): array
     {

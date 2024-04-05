@@ -2,24 +2,25 @@
 
 namespace App\Models;
 
-use Filament\Panel;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-
-use App\Observers\UserObserver;
+use Filament\Facades\Filament;
+use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Section;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
-use Filament\Forms\Components\Section;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Filament\Models\Contracts\HasTenants;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
-use Filament\Forms;
 
-#[ObservedBy([UserObserver::class])]
-class User extends Authenticatable implements FilamentUser, HasAvatar
+class User extends Authenticatable implements FilamentUser, HasAvatar, HasTenants
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
@@ -29,7 +30,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
      * @var array<int, string>
      */
     protected $fillable = [
-        'custumer_id',
         'name',
         'email',
         'password',
@@ -56,6 +56,26 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         'password' => 'hashed',
     ];
 
+    public function getTenants(Panel $panel): Collection
+    {
+        return $this->tenants;
+    }
+
+    public function tenants(): BelongsToMany
+    {
+        return $this->belongsToMany(Tenant::class);
+    }
+
+    public function canAccessTenant(Model $tenant): bool
+    {
+        return $this->tenants->contains($tenant);
+    }
+
+    public function tenant(): BelongsToMany
+    {
+        return $this->tenants()->where('tenant_id', Filament::getTenant()->getAttribute('id'));
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         return str_ends_with($this->email, '@example.com');
@@ -65,7 +85,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     {
         return Storage::url($this->avatar);
     }
-
 
     public static function getForm(): array
     {
@@ -82,11 +101,17 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
                     Forms\Components\TextInput::make('password')
                         ->label('Senha')
                         ->password()
+                        ->revealable()
                         ->required(),
                     Forms\Components\TextInput::make('password_confirmation')
                         ->label('Confirme a senha')
                         ->password()
+                        ->revealable()
                         ->required(),
+                    FileUpload::make('avatar')
+                        ->label('Avatar')
+                        ->acceptedFileTypes(['image/*'])
+                        ->rules(['image', 'max:1024']),
                 ])->columns(),
         ];
     }

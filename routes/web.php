@@ -1,6 +1,5 @@
 <?php
 
-use App\Livewire\InstallmentsTable;
 use Illuminate\Support\Facades\Route;
 
 /*

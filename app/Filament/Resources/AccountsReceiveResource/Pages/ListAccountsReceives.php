@@ -3,8 +3,6 @@
 namespace App\Filament\Resources\AccountsReceiveResource\Pages;
 
 use App\Filament\Resources\AccountsReceiveResource;
-use App\Filament\Resources\OrdersResource;
-use App\Models\AccountsReceiveInstallments;
 use Filament\Actions;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
@@ -13,7 +11,7 @@ class ListAccountsReceives extends ListRecords
 {
     protected static string $resource = AccountsReceiveResource::class;
 
-       protected function getHeaderActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\CreateAction::make(),
@@ -42,5 +40,4 @@ class ListAccountsReceives extends ListRecords
                 }),
         ];
     }
-
 }

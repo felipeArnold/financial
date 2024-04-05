@@ -12,7 +12,7 @@ class AddressForm extends Forms\Components\Field
     /** @var string|callable|null */
     public $relationship = null;
 
-    public function relationship(string | callable $relationship): static
+    public function relationship(string|callable $relationship): static
     {
         $this->relationship = $relationship;
 

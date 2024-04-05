@@ -5,7 +5,6 @@ namespace App\Filament\Resources\OrdersResource\Pages;
 use App\Filament\Resources\OrdersResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class ViewOrders extends ViewRecord
 {

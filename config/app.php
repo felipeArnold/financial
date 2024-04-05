@@ -171,7 +171,6 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\TelescopeServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
-        OwenIt\Auditing\AuditingServiceProvider::class,
     ])->toArray(),
 
     /*

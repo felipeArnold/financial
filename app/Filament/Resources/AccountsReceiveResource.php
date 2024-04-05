@@ -11,7 +11,6 @@ use App\Models\User;
 use Filament\Actions\RestoreAction;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
@@ -22,7 +21,6 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
@@ -31,10 +29,14 @@ class AccountsReceiveResource extends Resource
     protected static ?string $model = AccountsReceive::class;
 
     protected static ?string $label = 'Contas a receber';
-    protected static ?string $navigationLabel  = 'Contas a receber';
-    protected static ?string $pluralLabel  = 'Contas a receber';
+
+    protected static ?string $navigationLabel = 'Contas a receber';
+
+    protected static ?string $pluralLabel = 'Contas a receber';
 
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
+
+    protected static ?string $recordTitleAttribute = 'title';
 
     public static function form(Form $form): Form
     {
@@ -52,13 +54,13 @@ class AccountsReceiveResource extends Resource
                 'accounts_receive_installments.due_date as due_date',
                 'accounts_receive_installments.parcel as parcel',
                 'accounts_receive_installments.value as value',
-
             )
             ->join('accounts_receives', 'accounts_receives.id', '=', 'accounts_receive_installments.accounts_receive_id')
             ->join('people', 'people.id', '=', 'accounts_receives.person_id')
             ->join('users', 'users.id', '=', 'accounts_receives.user_id');
 
         $table->query($query);
+
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
@@ -197,7 +199,7 @@ class AccountsReceiveResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
-                ExportBulkAction::make()
+                ExportBulkAction::make(),
             ])
             ->emptyStateIcon('heroicon-o-credit-card')
             ->emptyStateHeading('Nenhuma conta a receber encontrada')
@@ -206,7 +208,7 @@ class AccountsReceiveResource extends Resource
                 Action::make('create')
                     ->label('Criar conta a receber')
                     ->icon('heroicon-m-plus')
-                    ->url('accounts-receives/create')
+                    ->url('accounts-receives/create'),
             ])
             ->filtersTriggerAction(
                 fn (Action $action) => $action

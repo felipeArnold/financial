@@ -2,27 +2,21 @@
 
 namespace App\Models;
 
-use App\Enums\OrdersStatusEnum;
-use App\Models\Scopes\CostumerScope;
+use App\Enums\Orders\StatusEnum;
+use App\Enums\Orders\TypeEnum;
 use App\Observers\OrdersObserver;
+use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Filament\Forms;
-use Leandrocfe\FilamentPtbrFormFields\Document;
 use Leandrocfe\FilamentPtbrFormFields\Money;
-use OwenIt\Auditing\Contracts\Auditable;
 
 #[ObservedBy(OrdersObserver::class)]
-//#[ScopedBy(CostumerScope::class)]
-class Orders extends Model implements Auditable
+class Orders extends Model
 {
-    use \OwenIt\Auditing\Auditable;
     use HasFactory;
     use SoftDeletes;
 
@@ -41,7 +35,14 @@ class Orders extends Model implements Auditable
     protected $casts = [
         'id' => 'integer',
         'total' => 'decimal:2',
+        'type' => TypeEnum::class,
+        'status' => StatusEnum::class,
     ];
+
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
 
     public function person(): BelongsTo
     {
@@ -81,28 +82,28 @@ class Orders extends Model implements Auditable
                         ->required()
                         ->columnSpan(1),
                     Forms\Components\ToggleButtons::make('status')
-                            ->inline()
-                            ->default('budget')
-                            ->options([
-                                'budget' => 'Orçamento',
-                                'open' => 'Aberto',
-                                'progress' => 'Em andamento',
-                                'finished' => 'Finalizado',
-                                'canceled' => 'Cancelado',
-                                'waiting' => 'Aguardando',
-                                'approved' => 'Aprovado',
-                            ])
-                            ->icons([
-                                'budget' => 'heroicon-o-document',
-                                'open' => 'heroicon-o-document-duplicate',
-                                'progress' => 'heroicon-o-cog',
-                                'finished' => 'heroicon-o-check-circle',
-                                'canceled' => 'heroicon-o-x-circle',
-                                'waiting' => 'heroicon-o-clock',
-                                'approved' => 'heroicon-o-check',
-                            ])
-                            ->columnSpan(2)
-                            ->required(),
+                        ->inline()
+                        ->default('budget')
+                        ->options([
+                            'budget' => 'Orçamento',
+                            'open' => 'Aberto',
+                            'progress' => 'Em andamento',
+                            'finished' => 'Finalizado',
+                            'canceled' => 'Cancelado',
+                            'waiting' => 'Aguardando',
+                            'approved' => 'Aprovado',
+                        ])
+                        ->icons([
+                            'budget' => 'heroicon-o-document',
+                            'open' => 'heroicon-o-document-duplicate',
+                            'progress' => 'heroicon-o-cog',
+                            'finished' => 'heroicon-o-check-circle',
+                            'canceled' => 'heroicon-o-x-circle',
+                            'waiting' => 'heroicon-o-clock',
+                            'approved' => 'heroicon-o-check',
+                        ])
+                        ->columnSpan(2)
+                        ->required(),
                     Forms\Components\Select::make('person_id')
                         ->label('Cliente')
                         ->options(Person::all()->pluck('name', 'id'))
@@ -118,6 +119,7 @@ class Orders extends Model implements Auditable
                     Forms\Components\Select::make('user_id')
                         ->label('Responsável')
                         ->options(User::all()->pluck('name', 'id'))
+                        ->default(auth()->id())
                         ->searchable()
                         ->required()
                         ->native(false),

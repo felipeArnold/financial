@@ -2,7 +2,6 @@
 
 namespace App\Enums;
 
-
 enum OrdersStatusEnum: string
 {
     case BUDGET = 'budget';

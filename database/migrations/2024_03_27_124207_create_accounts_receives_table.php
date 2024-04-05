@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Person;
+use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,6 +16,7 @@ return new class extends Migration
     {
         Schema::create('accounts_receives', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Tenant::class);
             $table->foreignIdFor(Person::class);
             $table->foreignIdFor(User::class);
             $table->string('title', 100);

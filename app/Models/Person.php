@@ -2,20 +2,14 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\CostumerScope;
-use App\Observers\PersonObserver;
-use Filament\Forms\Components\Section;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use Filament\Forms;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Leandrocfe\FilamentPtbrFormFields\Document;
-use Filament\Forms;
 
-#[ObservedBy(PersonObserver::class)]
-#[ScopedBy(CostumerScope::class)]
 class Person extends Model
 {
     use HasFactory;
@@ -31,6 +25,11 @@ class Person extends Model
     protected $casts = [
         'birth_date' => 'date',
     ];
+
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
 
     public function phones(): MorphMany
     {
@@ -50,40 +49,54 @@ class Person extends Model
     public static function getForm(): array
     {
         return [
-            Section::make('Dados gerais')
-                ->schema([
-                    Forms\Components\TextInput::make('name')
-                        ->label('Nome')
-                        ->rules([
-                            'required',
-                            'max:50'
-                        ])
-                        ->required(),
-                    Forms\Components\TextInput::make('surname')
-                        ->label('Apelido')
-                        ->rules([
-                            'nullable',
-                            'max:50'
+            Forms\Components\Tabs::make('Tabs')
+                ->tabs([
+                    Forms\Components\Tabs\Tab::make('Dados gerais')
+                        ->icon('heroicon-o-user')
+                        ->schema([
+                            Forms\Components\TextInput::make('name')
+                                ->label('Nome')
+                                ->rules([
+                                    'required',
+                                    'max:50',
+                                ])
+                                ->required(),
+                            Forms\Components\TextInput::make('surname')
+                                ->label('Apelido')
+                                ->rules([
+                                    'nullable',
+                                    'max:50',
+                                ]),
+                            Document::make('document')
+                                ->label('CPF/CNPJ')
+                                ->dynamic(),
+                            Forms\Components\DatePicker::make('birth_date')
+                                ->label('Data de nascimento')
+                                ->native(),
+                            Forms\Components\TextInput::make('nationality')
+                                ->label('Nacionalidade')
+                                ->rules([
+                                    'nullable',
+                                    'max:50',
+                                ]),
+                            Forms\Components\TextInput::make('naturalness')
+                                ->label('Naturalidade')
+                                ->rules([
+                                    'nullable',
+                                    'max:50',
+                                ]),
                         ]),
-                    Document::make('document')
-                        ->label('CPF/CNPJ')
-                        ->dynamic(),
-                    Forms\Components\DatePicker::make('birth_date')
-                        ->label('Data de nascimento')
-                        ->native(),
-                    Forms\Components\TextInput::make('nationality')
-                        ->label('Nacionalidade')
-                        ->rules([
-                            'nullable',
-                            'max:50'
-                        ]),
-                    Forms\Components\TextInput::make('naturalness')
-                        ->label('Naturalidade')
-                        ->rules([
-                            'nullable',
-                            'max:50'
-                        ]),
-                ])->columns(),
+                    Forms\Components\Tabs\Tab::make('E-mails')
+                        ->icon('heroicon-o-envelope')
+                        ->schema(Emails::getForm()),
+                    Forms\Components\Tabs\Tab::make('Telefones')
+                        ->icon('heroicon-o-phone')
+                        ->schema(Phones::getForm()),
+                    Forms\Components\Tabs\Tab::make('Endereços')
+                        ->schema(Addresses::getForm()),
+                ])
+                ->persistTab()
+                ->columnSpan(2),
         ];
     }
 }
