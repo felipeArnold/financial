@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(AccountsReceive::class);
             $table->integer('parcel')->default(1);
+            $table->enum('type', ['credit_card', 'bank_slip', 'pix', 'transfer', 'deposit'])->default('bank_slip');
             $table->date('due_date');
             $table->date('pay_date')->nullable();
             $table->string('document_number', 20)->nullable();

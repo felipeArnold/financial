@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
@@ -40,42 +41,37 @@ class AccountsReceive extends Model
     public static function getForm(): array
     {
         return [
-            Tabs::make('Tabs')
-                ->tabs([
-                    Tabs\Tab::make('Informações gerais')
-                        ->icon('heroicon-o-user')
-                        ->schema([
-                            Select::make('person_id')
-                                ->label('Cliente')
-                                ->options(Person::all()->pluck('name', 'id'))
-                                ->searchable()
-                                ->required()
-                                ->createOptionForm(function () {
-                                    return Person::getForm();
-                                })
-                                ->createOptionUsing(function (array $data): int {
-                                    return Person::create($data)->id;
-                                })
-                                ->native(false),
-                            Select::make('user_id')
-                                ->label('Responsável')
-                                ->options(User::all()->pluck('name', 'id'))
-                                ->default(auth()->id())
-                                ->searchable()
-                                ->required()
-                                ->native(false),
-                            TextInput::make('title')
-                                ->label('Título')
-                                ->required(),
-                            MarkdownEditor::make('observation')
-                                ->label('Observação'),
-                        ]),
-                    Tabs\Tab::make('Parcelas')
-                        ->icon('heroicon-o-currency-dollar')
-                        ->schema(AccountsReceiveInstallments::getForm()),
-                ])
-                ->persistTab()
-                ->columnSpan(2),
+            Section::make('Informações gerias')
+                ->description('Preencha as informações gerais')
+                ->schema([
+                    Select::make('person_id')
+                        ->label('Cliente')
+                        ->options(Person::all()->pluck('name', 'id'))
+                        ->searchable()
+                        ->required()
+                        ->createOptionForm(function () {
+                            return Person::getForm();
+                        })
+                        ->createOptionUsing(function (array $data): int {
+                            return Person::create($data)->id;
+                        })
+                        ->native(false),
+                    Select::make('user_id')
+                        ->label('Responsável')
+                        ->options(User::all()->pluck('name', 'id'))
+                        ->default(auth()->id())
+                        ->searchable()
+                        ->required()
+                        ->native(false),
+                    TextInput::make('title')
+                        ->label('Título')
+                        ->required()
+                        ->columnSpan(2),
+                    MarkdownEditor::make('observation')
+                        ->label('Observação')
+                        ->columnSpan(2)
+                ])->columns(),
+
         ];
     }
 }

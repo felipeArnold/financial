@@ -60,6 +60,12 @@ class InstallmentsRelationManager extends RelationManager
                     ->toggleable()
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Tipo')
+                    ->badge()
+                    ->toggleable()
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('due_date')
                     ->label('Vencimento')
                     ->date(format: 'd/m/Y')
@@ -116,8 +122,11 @@ class InstallmentsRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                ViewAction::make(),
-                EditAction::make(),
+                ViewAction::make()
+                    ->hiddenLabel(),
+                EditAction::make()
+                    ->hiddenLabel()
+                    ->disabled(fn ($record) => $record->status !== 'open'),
                 ActionGroup::make([
                     Action::make('duplicate')
                         ->label('Duplicar parcela')
@@ -148,7 +157,7 @@ class InstallmentsRelationManager extends RelationManager
                             }
                         ),
                     Action::make('pay')
-                        ->visible(fn ($record) => $record->status === 'open')
+                        ->disabled(fn ($record) => $record->status !== 'open')
                         ->icon('heroicon-o-check-circle')
                         ->label('Marcar como pago')
                         ->requiresConfirmation()
@@ -170,7 +179,7 @@ class InstallmentsRelationManager extends RelationManager
                             }
                         ),
                     Action::make('pay_and_create_another')
-                        ->visible(fn ($record) => $record->status === 'open')
+                        ->disabled(fn ($record) => $record->status !== 'open')
                         ->icon('heroicon-o-check-circle')
                         ->label('Marcar como pago e criar outra')
                         ->requiresConfirmation()

@@ -20,6 +20,7 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
@@ -42,6 +43,8 @@ class AccountsReceiveResource extends Resource
     {
         return $form->schema(AccountsReceive::getForm());
     }
+
+
 
     public static function table(Table $table): Table
     {

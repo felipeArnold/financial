@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\Orders\StatusEnum;
 use App\Filament\Resources\OrdersResource\Pages;
 use App\Models\AccountsReceive;
 use App\Models\Orders;
@@ -100,8 +101,10 @@ class OrdersResource extends Resource
             ->actions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make(),
-                    DeleteAction::make(),
+                    EditAction::make()
+                        ->disabled(fn ($record) => $record->status === StatusEnum::approved),
+                    DeleteAction::make()
+                        ->disabled(fn ($record) => $record->status === StatusEnum::approved),
                 ]),
             ])
             ->bulkActions([
