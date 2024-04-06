@@ -9,6 +9,7 @@ use App\Filament\Resources\OrdersResource\Widgets\CustomersChart;
 use App\Filament\Resources\OrdersResource\Widgets\OrdersChart;
 use App\Filament\Resources\OrdersResource\Widgets\StatsOverview;
 use App\Models\Tenant;
+use BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -24,6 +25,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 
 class AppPanelProvider extends PanelProvider
 {
@@ -47,6 +49,9 @@ class AppPanelProvider extends PanelProvider
                     ->icon('heroicon-m-cog-8-tooth'),
             ])
             ->brandLogo(fn () => view('components.logo'))
+            ->plugins([
+                FilamentSpatieLaravelBackupPlugin::make()
+            ])
             ->databaseNotifications()
             ->databaseNotificationsPolling('60s')
             ->sidebarCollapsibleOnDesktop()

@@ -47,10 +47,16 @@ class Tenant extends Model
         return $this->hasMany(AccountsReceive::class);
     }
 
+    public function businessTags(): HasMany
+    {
+        return $this->hasMany(BusinessTags::class);
+    }
+
     public function addresses(): MorphMany
     {
         return $this->morphMany(Addresses::class, 'addressable');
     }
+
 
     public function getFilamentAvatarUrl(): ?string
     {
