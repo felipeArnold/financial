@@ -3,15 +3,13 @@
 namespace App\Models;
 
 use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Leandrocfe\FilamentPtbrFormFields\Money;
 
-class BusinessTags extends Model
+class BusinessOrigins extends Model
 {
     use HasFactory;
 
@@ -26,11 +24,11 @@ class BusinessTags extends Model
     {
         return [
             Section::make('Informações gerais')
-                ->description('Preencha as informações da tag')
+                ->description('Preencha as informações da origin')
                 ->schema([
                     TextInput::make('name')
                         ->label('Nome')
-                        ->placeholder('Nome da tag')
+                        ->placeholder('Nome da origin')
                         ->columnSpan(1)
                         ->rules([
                             'required',

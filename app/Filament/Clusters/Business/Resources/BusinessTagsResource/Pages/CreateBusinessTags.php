@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\BusinessTagsResource\Pages;
+namespace App\Filament\Clusters\Business\Resources\BusinessTagsResource\Pages;
 
-use App\Filament\Resources\BusinessTagsResource;
-use Filament\Actions;
+use App\Filament\Clusters\Business\Resources\BusinessTagsResource;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateBusinessTags extends CreateRecord

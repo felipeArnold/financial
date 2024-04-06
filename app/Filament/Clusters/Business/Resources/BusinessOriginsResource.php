@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Clusters\Business\Resources;
 
 use App\Filament\Clusters\Business;
-use App\Filament\Clusters\Settings;
-use App\Filament\Resources\BusinessTagsResource\Pages;
-use App\Filament\Resources\BusinessTagsResource\RelationManagers;
-use App\Models\BusinessTags;
+use App\Filament\Clusters\Business\Resources\BusinessOriginsResource\Pages;
+use App\Filament\Clusters\Business\Resources\BusinessOriginsResource\RelationManagers;
+use App\Models\BusinessOrigins;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -16,21 +15,22 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
-class BusinessTagsResource extends Resource
+class BusinessOriginsResource extends Resource
 {
-    protected static ?string $model = BusinessTags::class;
+    protected static ?string $model = BusinessOrigins::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $label = 'Tags';
+    protected static ?string $cluster = Business::class;
+
+
+    protected static ?string $label = 'Origens';
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $cluster = Business::class;
-
     public static function form(Form $form): Form
     {
-        return $form->schema(BusinessTags::getForm());
+        return $form->schema(BusinessOrigins::getForm());
     }
 
     public static function table(Table $table): Table
@@ -67,10 +67,17 @@ class BusinessTagsResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBusinessTags::route('/'),
+            'index' => Pages\ListBusinessOrigins::route('/'),
         ];
     }
 }
