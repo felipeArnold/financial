@@ -12,13 +12,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('business_origins', function (Blueprint $table) {
+        Schema::create('business_funnels', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Tenant::class)
                 ->constrained()
                 ->cascadeOnDelete();
             $table->string('name');
-            $table->string('color')->nullable();
+            $table->integer('order');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('business_origins');
+        Schema::dropIfExists('business_funnels');
     }
 };

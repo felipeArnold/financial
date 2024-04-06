@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\BusinessFunnels;
 use App\Models\Tenant;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -12,13 +13,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('business_origins', function (Blueprint $table) {
+        Schema::create('business_stages', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Tenant::class)
+            $table->foreignIdFor(BusinessFunnels::class)
                 ->constrained()
                 ->cascadeOnDelete();
             $table->string('name');
-            $table->string('color')->nullable();
+            $table->integer('order');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('business_origins');
+        Schema::dropIfExists('business_stages');
     }
 };

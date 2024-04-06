@@ -25,6 +25,13 @@ class AccountsReceiveInstallments extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
+        'due_date' => 'date',
+        'pay_date' => 'date',
+        'value' => 'decimal:2',
+        'discount' => 'decimal:2',
+        'interest' => 'decimal:2',
+        'fine' => 'decimal:2',
+        'value_paid' => 'decimal:2',
         'type' => TypePaymentEnum::class,
     ];
 

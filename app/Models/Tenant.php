@@ -57,6 +57,11 @@ class Tenant extends Model
         return $this->hasMany(BusinessOrigins::class);
     }
 
+    public function businessFunnels(): HasMany
+    {
+        return $this->hasMany(BusinessFunnels::class);
+    }
+
     public function addresses(): MorphMany
     {
         return $this->morphMany(Addresses::class, 'addressable');
