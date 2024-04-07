@@ -5,8 +5,12 @@ namespace App\Models;
 use App\Enums\Orders\StatusEnum;
 use App\Enums\Orders\TypeEnum;
 use App\Observers\OrdersObserver;
-use Filament\Forms;
-use Filament\Forms\Components\Section;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Components\Wizard;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -57,88 +61,130 @@ class Orders extends Model
     public static function getForm(): array
     {
         return [
-            Section::make('Informações do gerais')
-                ->schema([
-                    Forms\Components\ToggleButtons::make('type')
-                        ->label('Tipo')
-                        ->inline()
-                        ->options([
-                            'service' => 'Serviço',
-                            'sale' => 'Venda',
-                        ])
-                        ->icons([
-                            'service' => 'heroicon-o-cog',
-                            'sale' => 'heroicon-o-shopping-cart',
-                        ])
-                        ->colors([
-                            'service' => 'primary',
-                            'sale' => 'success',
-                        ])
-                        ->required()
-                        ->columnSpan(1)
-                        ->default('service'),
-                    Money::make('total')
-                        ->label('Valor total')
-                        ->required()
-                        ->columnSpan(1),
-                    Forms\Components\ToggleButtons::make('status')
-                        ->inline()
-                        ->default('budget')
-                        ->options([
-                            'budget' => 'Orçamento',
-                            'open' => 'Aberto',
-                            'progress' => 'Em andamento',
-                            'finished' => 'Finalizado',
-                            'canceled' => 'Cancelado',
-                            'waiting' => 'Aguardando',
-                            'approved' => 'Aprovado',
-                        ])
-                        ->icons([
-                            'budget' => 'heroicon-o-document',
-                            'open' => 'heroicon-o-document-duplicate',
-                            'progress' => 'heroicon-o-cog',
-                            'finished' => 'heroicon-o-check-circle',
-                            'canceled' => 'heroicon-o-x-circle',
-                            'waiting' => 'heroicon-o-clock',
-                            'approved' => 'heroicon-o-check',
-                        ])
-                        ->columnSpan(2)
-                        ->required(),
-                    Forms\Components\Select::make('person_id')
-                        ->label('Cliente')
-                        ->options(Person::all()->pluck('name', 'id'))
-                        ->searchable()
-                        ->required()
-                        ->createOptionForm(function () {
-                            return Person::getForm();
-                        })
-                        ->createOptionUsing(function (array $data): int {
-                            return Person::create($data)->id;
-                        })
-                        ->native(false),
-                    Forms\Components\Select::make('user_id')
-                        ->label('Responsável')
-                        ->options(User::all()->pluck('name', 'id'))
-                        ->default(auth()->id())
-                        ->searchable()
-                        ->required()
-                        ->native(false),
-                    Forms\Components\DatePicker::make('initial_date')
-                        ->label('Data de início')
-                        ->required()
-                        ->default(now()),
-                    Forms\Components\DatePicker::make('final_date')
-                        ->label('Data de término')
-                        ->required()
-                        ->default(now()->addDays(5))
-                        ->rules('after_or_equal:initial_date'),
-                    Forms\Components\MarkdownEditor::make('description')
-                        ->label('Descrição'),
-                    Forms\Components\MarkdownEditor::make('observation')
-                        ->label('Observação'),
-                    Forms\Components\MarkdownEditor::make('note')
-                        ->label('Nota'),
-                ])->columns(),
+            Wizard::make([
+                Wizard\Step::make('Dados gerais')
+                   ->description('Insira as informações gerais do pedido.')
+                   ->icon('heroicon-o-information-circle')
+                    ->schema([
+                        ToggleButtons::make('type')
+                            ->label('Tipo')
+                            ->inline()
+                            ->options([
+                                'service' => 'Serviço',
+                                'sale' => 'Venda',
+                            ])
+                            ->icons([
+                                'service' => 'heroicon-o-cog',
+                                'sale' => 'heroicon-o-shopping-cart',
+                            ])
+                            ->colors([
+                                'service' => 'primary',
+                                'sale' => 'success',
+                            ])
+                            ->required()
+                            ->default('service'),
+                        ToggleButtons::make('status')
+                            ->inline()
+                            ->default('budget')
+                            ->options([
+                                'budget' => 'Orçamento',
+                                'open' => 'Aberto',
+                                'progress' => 'Em andamento',
+                                'finished' => 'Finalizado',
+                                'canceled' => 'Cancelado',
+                                'waiting' => 'Aguardando',
+                                'approved' => 'Aprovado',
+                            ])
+                            ->icons([
+                                'budget' => 'heroicon-o-document',
+                                'open' => 'heroicon-o-document-duplicate',
+                                'progress' => 'heroicon-o-cog',
+                                'finished' => 'heroicon-o-check-circle',
+                                'canceled' => 'heroicon-o-x-circle',
+                                'waiting' => 'heroicon-o-clock',
+                                'approved' => 'heroicon-o-check',
+                            ])
+                            ->required(),
+                        Select::make('person_id')
+                            ->label('Cliente')
+                            ->options(Person::all()->pluck('name', 'id'))
+                            ->searchable()
+                            ->required()
+                            ->createOptionForm(function () {
+                                return Person::getForm();
+                            })
+                            ->createOptionUsing(function (array $data): int {
+                                return Person::create($data)->id;
+                            })
+                            ->loadingMessage('Carregando clientes...')
+                            ->native(false),
+                        Select::make('user_id')
+                            ->label('Responsável')
+                            ->options(User::all()->pluck('name', 'id'))
+                            ->default(auth()->id())
+                            ->searchable()
+                            ->required()
+                            ->native(false),
+                        DatePicker::make('initial_date')
+                            ->label('Data de início')
+                            ->required()
+                            ->default(now()),
+                        DatePicker::make('final_date')
+                            ->label('Data de término')
+                            ->required()
+                            ->default(now()->addDays(5))
+                            ->rules('after_or_equal:initial_date'),
+                    ]),
+                Wizard\Step::make('Produtos')
+                    ->description('Adicione os produtos ao pedido.')
+                    ->icon('heroicon-o-shopping-cart')
+                    ->schema([
+                        Money::make('total')
+                            ->label('Valor total')
+                            ->disabled()
+                            ->required()
+                            ->default(0)
+                            ->afterStateHydrated(function ($component, $state) {
+                                if (isset($state->products)) {
+                                    $total = 0;
+                                    foreach ($state->products as $product) {
+                                        $total += $product['price'] * $product['quantity'];
+                                    }
+                                    $state->total = $total;
+                                }
+
+                                return $state;
+                            }),
+                        Select::make('products')
+                            ->label('Produtos')
+                            ->options(Product::all()->pluck('name', 'id'))
+                            ->searchable()
+                            ->required()
+                            ->createOptionForm(function () {
+                                return Product::getForm();
+                            })
+                            ->createOptionUsing(function (array $data): int {
+                                return Product::create($data)->id;
+                            })
+                            ->native(false)
+                            ->live(true)
+                            ->rules('required'),
+                    ]),
+                Wizard\Step::make('Observações')
+                    ->description('Adicione observações ao pedido.')
+                    ->icon('heroicon-o-user')
+                    ->schema([
+                        MarkdownEditor::make('description')
+                            ->label('Descrição'),
+                        MarkdownEditor::make('observation')
+                            ->label('Observação'),
+                        MarkdownEditor::make('note')
+                            ->label('Nota'),
+                        ]),
+            ])
+            ->skippable()
+            ->columnSpan(2)
+
         ];
     }
 }
