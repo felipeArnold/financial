@@ -46,6 +46,7 @@ class AccountsReceive extends Model
                 Wizard\Step::make('Dados gerais')
                     ->description('Insira as informações gerais do pedido.')
                     ->icon('heroicon-o-information-circle')
+                    ->columns(1)
                     ->schema([
                         Select::make('person_id')
                             ->label('Cliente')
@@ -68,11 +69,9 @@ class AccountsReceive extends Model
                             ->native(false),
                         TextInput::make('title')
                             ->label('Título')
-                            ->required()
-                            ->columnSpan(2),
+                            ->required(),
                         MarkdownEditor::make('observation')
                             ->label('Observação')
-                            ->columnSpan(2)
                             ->nullable(),
                     ]),
                 Wizard\Step::make('Parcelas')

@@ -136,7 +136,8 @@ class Orders extends Model
                             ->required()
                             ->default(now()->addDays(5))
                             ->rules('after_or_equal:initial_date'),
-                    ]),
+                    ])
+                    ->columns(2),
                 Wizard\Step::make('Produtos')
                     ->description('Adicione os produtos ao pedido.')
                     ->icon('heroicon-o-shopping-cart')
@@ -173,6 +174,7 @@ class Orders extends Model
                                     ->disabled()
                                     ->default(0),
                             ])
+                            ->columns(2)
                     ]),
                 Wizard\Step::make('Observações')
                     ->description('Adicione observações ao pedido.')
@@ -184,7 +186,8 @@ class Orders extends Model
                             ->label('Observação'),
                         MarkdownEditor::make('note')
                             ->label('Nota'),
-                        ]),
+                        ])
+                    ->columns(2)
             ])
             ->skippable()
             ->columnSpan(2)

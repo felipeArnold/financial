@@ -73,19 +73,8 @@ class Person extends Model
                             Forms\Components\DatePicker::make('birth_date')
                                 ->label('Data de nascimento')
                                 ->native(),
-                            Forms\Components\TextInput::make('nationality')
-                                ->label('Nacionalidade')
-                                ->rules([
-                                    'nullable',
-                                    'max:50',
-                                ]),
-                            Forms\Components\TextInput::make('naturalness')
-                                ->label('Naturalidade')
-                                ->rules([
-                                    'nullable',
-                                    'max:50',
-                                ]),
-                        ]),
+                        ])
+                        ->columns(2),
                     Forms\Components\Tabs\Tab::make('E-mails')
                         ->icon('heroicon-o-envelope')
                         ->schema(Emails::getForm()),

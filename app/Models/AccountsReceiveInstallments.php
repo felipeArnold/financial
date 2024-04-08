@@ -47,16 +47,51 @@ class AccountsReceiveInstallments extends Model
     public static function getForm(): array
     {
         return [
-            TextInput::make('parcels')
-                ->label('Parcelas')
-                ->required()
-                ->reactive()
-                ->default(1),
-            Money::make('amount')
-                ->label('Valor total')
-                ->required()
-                ->reactive()
-                ->default(0),
+            Section::make('Dados da parcela')
+            ->columns(2)
+            ->schema([
+                Money::make('amount')
+                    ->label('Valor total')
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, $set, $get) {
+                        $set('installments', collect($get('installments'))->map(function ($installment) use ($state, $get) {
+                            return array_merge($installment, [
+                                'value' => $state / $get('parcels'),
+                            ]);
+                        })->toArray());
+                    })
+                    ->required()
+                    ->default(0),
+                Select::make('parcels')
+                    ->label('Parcelas')
+                    ->required()
+                    ->options(fn () => collect(range(1, 99))->mapWithKeys(fn ($value) => [$value => $value]))
+                    ->native()
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, $set) {
+                        $installments = [];
+
+                        for ($i = 1; $i <= $state; $i++) {
+                            $installments[] = [
+                                'parcel' => $i,
+                                'due_date' => now()->addMonth($i)->format('Y-m-d'),
+                                'pay_date' => null,
+                                'type' => TypePaymentEnum::bank_slip,
+                                'document_number' => null,
+                                'value' => 0,
+                                'discount' => 0,
+                                'interest' => 0,
+                                'fine' => 0,
+                                'value_paid' => 0,
+                                'status' => 'open',
+                                'observation' => null,
+                            ];
+                        }
+
+                        $set('installments', $installments);
+                    })
+                    ->default(1),
+            ]),
             Repeater::make('installments')
                 ->hiddenLabel()
                 ->addActionLabel('Adicionar parcela')
@@ -71,13 +106,12 @@ class AccountsReceiveInstallments extends Model
                         ->label('Tipo de pagamento')
                         ->options(TypePaymentEnum::class)
                         ->required()
-                        ->default(TypePaymentEnum::bank_slip)
-                        ->columnSpan(1),
+                        ->default(TypePaymentEnum::bank_slip),
                     TextInput::make('document_number')
-                        ->label('Número do documento')
-                        ->columnSpan(1),
+                        ->label('Número do documento'),
                     Money::make('value')
                         ->label('Valor')
+                        ->disabled()
                         ->required(),
                     Money::make('discount')
                         ->label('Desconto'),
@@ -103,13 +137,11 @@ class AccountsReceiveInstallments extends Model
                         ->rules(['file', 'max:1024'])
                         ->preserveFilenames()
                         ->openable()
-                        ->downloadable()
-                        ->columnSpan(2),
+                        ->downloadable(),
                     MarkdownEditor::make('observation')
-                        ->label('Observação')
-                        ->columnSpan(2),
-
+                        ->label('Observação'),
                 ])
+                ->columns(2)
                 ->itemLabel(fn (array $state): ?string => $state['status'] === 'open' ? 'Parcela em aberto' : 'Parcela paga')
                 ->collapsible()
                 ->cloneable()
