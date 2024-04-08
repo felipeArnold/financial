@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreignIdFor(Tenant::class);
             $table->foreignIdFor(Person::class);
             $table->foreignIdFor(User::class);
+            $table->integer('parcels')->default(1);
+            $table->decimal('amount', 10, 2);
             $table->string('title', 100);
             $table->text('observation')->nullable();
             $table->timestamps();

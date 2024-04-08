@@ -7,6 +7,7 @@ use App\Observers\AccountsReceiveInstallmentsObserver;
 use Carbon\Carbon;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
@@ -46,8 +47,18 @@ class AccountsReceiveInstallments extends Model
     public static function getForm(): array
     {
         return [
+            TextInput::make('parcels')
+                ->label('Parcelas')
+                ->required()
+                ->reactive()
+                ->default(1),
+            Money::make('amount')
+                ->label('Valor total')
+                ->required()
+                ->reactive()
+                ->default(0),
             Repeater::make('installments')
-                ->defaultItems(1)
+                ->hiddenLabel()
                 ->addActionLabel('Adicionar parcela')
                 ->relationship()
                 ->schema([
@@ -60,6 +71,7 @@ class AccountsReceiveInstallments extends Model
                         ->label('Tipo de pagamento')
                         ->options(TypePaymentEnum::class)
                         ->required()
+                        ->default(TypePaymentEnum::bank_slip)
                         ->columnSpan(1),
                     TextInput::make('document_number')
                         ->label('Número do documento')
@@ -82,8 +94,17 @@ class AccountsReceiveInstallments extends Model
                             'paid' => 'Pago',
                             'canceled' => 'Cancelado',
                         ])
+                        ->native()
                         ->default('open')
                         ->required(),
+                    FileUpload::make('file')
+                        ->label('Anexo')
+                        ->acceptedFileTypes(['application/pdf'])
+                        ->rules(['file', 'max:1024'])
+                        ->preserveFilenames()
+                        ->openable()
+                        ->downloadable()
+                        ->columnSpan(2),
                     MarkdownEditor::make('observation')
                         ->label('Observação')
                         ->columnSpan(2),

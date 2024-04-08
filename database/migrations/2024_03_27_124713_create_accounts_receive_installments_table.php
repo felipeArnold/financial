@@ -27,6 +27,7 @@ return new class extends Migration
             $table->decimal('value_paid', 10, 2)->default(0.00);
             $table->enum('status', ['open', 'paid', 'canceled'])->default('open');
             $table->text('observation')->nullable();
+            $table->string('file')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

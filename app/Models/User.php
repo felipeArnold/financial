@@ -110,6 +110,8 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasTenant
                         ->required(),
                     FileUpload::make('avatar')
                         ->label('Avatar')
+                        ->image()
+                        ->imageEditor()
                         ->acceptedFileTypes(['image/*'])
                         ->rules(['image', 'max:1024']),
                 ])->columns(),

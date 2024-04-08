@@ -7,10 +7,12 @@ use App\Enums\Orders\TypeEnum;
 use App\Observers\OrdersObserver;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\Wizard;
+use Filament\Forms\Set;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -155,20 +157,22 @@ class Orders extends Model
 
                                 return $state;
                             }),
-                        Select::make('products')
-                            ->label('Produtos')
-                            ->options(Product::all()->pluck('name', 'id'))
-                            ->searchable()
-                            ->required()
-                            ->createOptionForm(function () {
-                                return Product::getForm();
-                            })
-                            ->createOptionUsing(function (array $data): int {
-                                return Product::create($data)->id;
-                            })
-                            ->native(false)
-                            ->live(true)
-                            ->rules('required'),
+                        Repeater::make('products')
+                            ->schema([
+                                Select::make('products')
+                                    ->label('Produtos')
+                                    ->options(Product::all()->pluck('name', 'id'))
+                                    ->searchable()
+                                    ->required()
+                                    ->columnSpan(1)
+                                    ->native(false),
+                                Money::make('price')
+                                    ->label('Preço')
+                                    ->required()
+                                    ->columnSpan(1)
+                                    ->disabled()
+                                    ->default(0),
+                            ])
                     ]),
                 Wizard\Step::make('Observações')
                     ->description('Adicione observações ao pedido.')
