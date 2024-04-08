@@ -21,10 +21,18 @@ return new class extends Migration
             $table->date('pay_date')->nullable();
             $table->string('document_number', 20)->nullable();
             $table->decimal('value', 10, 2);
-            $table->decimal('discount', 10, 2)->default(0.00);
-            $table->decimal('interest', 10, 2)->default(0.00);
-            $table->decimal('fine', 10, 2)->default(0.00);
-            $table->decimal('value_paid', 10, 2)->default(0.00);
+            $table->decimal('discount', 10, 2)
+                ->default(0.00)
+                ->nullable();
+            $table->decimal('interest', 10, 2)
+                ->default(0.00)
+                ->nullable();
+            $table->decimal('fine', 10, 2)
+                ->default(0.00)
+                ->nullable();
+            $table->decimal('value_paid', 10, 2)
+                ->default(0.00)
+                ->nullable();
             $table->enum('status', ['open', 'paid', 'canceled'])->default('open');
             $table->text('observation')->nullable();
             $table->string('file')->nullable();

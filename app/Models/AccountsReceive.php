@@ -19,6 +19,11 @@ class AccountsReceive extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'due_date' => 'date',
+        'amount' => 'decimal:2',
+    ];
+
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);

@@ -29,6 +29,8 @@ class AccountsReceiveResource extends Resource
 {
     protected static ?string $model = AccountsReceive::class;
 
+    protected static ?string $navigationGroup = 'Financeiro';
+
     protected static ?string $label = 'Contas a receber';
 
     protected static ?string $navigationLabel = 'Contas a receber';

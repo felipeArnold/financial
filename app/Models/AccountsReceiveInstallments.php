@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AccountsReceive\TypePaymentEnum;
+use App\Helpers\FormatterHelper;
 use App\Observers\AccountsReceiveInstallmentsObserver;
 use Carbon\Carbon;
 use Filament\Forms\Components\Actions\Action;
@@ -54,22 +55,26 @@ class AccountsReceiveInstallments extends Model
                     ->label('Valor total')
                     ->reactive()
                     ->afterStateUpdated(function ($state, $set, $get) {
-                        $set('installments', collect($get('installments'))->map(function ($installment) use ($state, $get) {
+                        $valueState = FormatterHelper::decimal($state);
+
+                        $set('installments', collect($get('installments'))->map(function ($installment) use ($get, $valueState) {
                             return array_merge($installment, [
-                                'value' => $state / $get('parcels'),
+                                'value' => FormatterHelper::decimal($valueState / $get('parcels')),
                             ]);
                         })->toArray());
                     })
                     ->required()
-                    ->default(0),
+                    ->default(0.00),
                 Select::make('parcels')
                     ->label('Parcelas')
                     ->required()
                     ->options(fn () => collect(range(1, 99))->mapWithKeys(fn ($value) => [$value => $value]))
                     ->native()
                     ->reactive()
-                    ->afterStateUpdated(function ($state, $set) {
+                    ->afterStateUpdated(function ($state, $set, $get) {
                         $installments = [];
+
+                        $valueState = FormatterHelper::decimal($get('amount'));
 
                         for ($i = 1; $i <= $state; $i++) {
                             $installments[] = [
@@ -78,7 +83,7 @@ class AccountsReceiveInstallments extends Model
                                 'pay_date' => null,
                                 'type' => TypePaymentEnum::bank_slip,
                                 'document_number' => null,
-                                'value' => 0,
+                                'value' => FormatterHelper::decimal($valueState / $state),
                                 'discount' => 0,
                                 'interest' => 0,
                                 'fine' => 0,
@@ -111,16 +116,19 @@ class AccountsReceiveInstallments extends Model
                         ->label('Número do documento'),
                     Money::make('value')
                         ->label('Valor')
-                        ->disabled()
                         ->required(),
                     Money::make('discount')
-                        ->label('Desconto'),
+                        ->label('Desconto')
+                        ->default(0.00),
                     Money::make('interest')
-                        ->label('Juros'),
+                        ->label('Juros')
+                        ->default(0.00),
                     Money::make('fine')
-                        ->label('Multa'),
+                        ->label('Multa')
+                        ->default(0.00),
                     Money::make('value_paid')
-                        ->label('Valor pago'),
+                        ->label('Valor pago')
+                        ->default(0.00),
                     Select::make('status')
                         ->label('Status')
                         ->options([
@@ -149,16 +157,55 @@ class AccountsReceiveInstallments extends Model
                     Action::make('duplicate')
                         ->label('Duplicar')
                         ->icon('heroicon-o-document-duplicate')
+                        ->requiresConfirmation()
+                        ->visible(
+                            function ($record) {
+                                if ($record) {
+                                    if ($record->status === 'open' || $record->id !== null) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        )
                         ->action(
                             function ($record) {
-                                return $record->replicate()->save();
+                                AccountsReceiveInstallments::created([
+                                    'accounts_receive_id' => $record->accounts_receive_id,
+                                    'parcel' => $record->parcel + 1,
+                                    'due_date' => Carbon::parse($record->due_date)->addMonth(),
+                                    'pay_date' => null,
+                                    'value' => $record->value,
+                                    'discount' => $record->discount,
+                                    'interest' => $record->interest,
+                                    'fine' => $record->fine,
+                                    'value_paid' => $record->value_paid,
+                                    'status' => 'open',
+                                    'observation' => $record->observation,
+                                ]);
                             }
                         ),
                    Action::make('pay')
-//                        ->disabled(fn ($record) => $record->status !== 'open')
+                       ->visible(
+                           function ($record) {
+                               if ($record) {
+                                   if ($record->status === 'open' || $record->id !== null) {
+                                       return true;
+                                       }
+                               }
+                           }
+                       )
                         ->icon('heroicon-o-check-circle')
                         ->label('Marcar como pago')
-                        ->requiresConfirmation()
+                       ->requiresConfirmation()
+                       ->visible(
+                           function ($record) {
+                               if ($record) {
+                                   if ($record->status === 'open' || $record->id !== null) {
+                                       return true;
+                                   }
+                               }
+                           }
+                       )
                         ->action(
                             function ($record) {
 
@@ -181,6 +228,15 @@ class AccountsReceiveInstallments extends Model
                         ->icon('heroicon-o-check-circle')
                         ->label('Marcar como pago e criar outra')
                         ->requiresConfirmation()
+                        ->visible(
+                            function ($record) {
+                                if ($record) {
+                                    if ($record->status === 'open' || $record->id !== null) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        )
                         ->action(
                             function ($record) {
 
