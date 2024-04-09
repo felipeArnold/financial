@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Observers\TenantObserver;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Split;
 use Filament\Forms\Components\TextInput;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -16,11 +18,17 @@ use Illuminate\Support\Facades\Storage;
 use Leandrocfe\FilamentPtbrFormFields\Cep;
 use Leandrocfe\FilamentPtbrFormFields\Document;
 
+#[ObservedBy(TenantObserver::class)]
 class Tenant extends Model
 {
     //    use HasFactory;
 
     protected $guarded = ['id'];
+
+    public function members(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class);
+    }
 
     public function users(): BelongsToMany
     {

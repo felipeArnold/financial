@@ -39,7 +39,10 @@ class AppPanelProvider extends PanelProvider
             ->registration()
             ->passwordReset()
             ->emailVerification()
-            ->tenant(Tenant::class)
+            ->tenant(
+                Tenant::class,
+                slugAttribute: 'slug'
+            )
             ->tenantRegistration(RegisterTeam::class)
             ->tenantProfile(EditTeamProfile::class)
             ->tenantMenuItems([
