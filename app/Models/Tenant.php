@@ -67,6 +67,11 @@ class Tenant extends Model
         return $this->morphMany(Addresses::class, 'addressable');
     }
 
+    public function leads(): HasMany
+    {
+        return $this->hasMany(Lead::class);
+    }
+
 
     public function getFilamentAvatarUrl(): ?string
     {
