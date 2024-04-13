@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('businesses', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('responsible_id')->index()->foreign('user_id')->references('id')->on('users');
-            $table->unsignedBigInteger('people_id')->foreign('people_id')->references('id')->on('people')->nullable();
+            $table->unsignedBigInteger('lead_id')->foreign('lead_id')->references('id')->on('lead')->nullable();
             $table->unsignedBigInteger('stage_id')->foreign('stage_id')->references('id')->on('business_stages');
             $table->unsignedBigInteger('origin_id')->foreign('origin_id')->references('id')->on('business_origins')->nullable();
             $table->unsignedBigInteger('tag_id')->foreign('tag_id')->references('id')->on('business_tags')->nullable();

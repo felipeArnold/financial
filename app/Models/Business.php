@@ -20,7 +20,7 @@ class Business extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
-        'status' => BusinessEnum::class,
+        'status' => StatusEnum::class,
         'closing_forecast' => 'datetime',
         'closing_date' => 'datetime',
     ];
@@ -35,9 +35,9 @@ class Business extends Model
         return [
             Section::make('Lead')
                 ->schema([
-                    Select::make('people_id')
+                    Select::make('lead_id')
                         ->label('Pessoa')
-                        ->options(Person::pluck('name', 'id'))
+                        ->options(Lead::pluck('name', 'id'))
                         ->searchable()
                         ->required()
                         ->createOptionForm(function () {
@@ -57,7 +57,6 @@ class Business extends Model
                         ->createOptionUsing(function (array $data): int {
                             return BusinessOrigins::create($data)->id;
                         })
-                        ->required()
                         ->native(false),
                     Select::make('tag_id')
                         ->label('Tag')
@@ -68,7 +67,6 @@ class Business extends Model
                         ->createOptionUsing(function (array $data): int {
                             return BusinessTags::create($data)->id;
                         })
-                        ->required()
                         ->native(false),
                 ])->columns(2),
             Section::make('Negócio')
@@ -109,10 +107,10 @@ class Business extends Model
 //                        ->native(false),
                     Select::make('stage_id')
                         ->label('Estágio')
+                        ->options(BusinessStages::pluck('name', 'id'))
                         ->reactive()
                         ->required()
-                        ->native(false)
-                        ->default(1),
+                        ->native(false),
 
                 ])->columns(2),
         ];
