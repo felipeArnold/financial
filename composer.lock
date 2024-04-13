@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "55df0b694f623bf9d8fa9c438bdf1fd3",
+    "content-hash": "d2441aa4959ccf49bd8810610d198197",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -4191,16 +4191,16 @@
         },
         {
             "name": "mokhosh/filament-kanban",
-            "version": "v2.7.0",
+            "version": "v2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mokhosh/filament-kanban.git",
-                "reference": "d4a1d9a3d20297ad3d36fb7c74cd30509ec0380e"
+                "reference": "60580f0ff15b4941956b38740c5dc17a426b069d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mokhosh/filament-kanban/zipball/d4a1d9a3d20297ad3d36fb7c74cd30509ec0380e",
-                "reference": "d4a1d9a3d20297ad3d36fb7c74cd30509ec0380e",
+                "url": "https://api.github.com/repos/mokhosh/filament-kanban/zipball/60580f0ff15b4941956b38740c5dc17a426b069d",
+                "reference": "60580f0ff15b4941956b38740c5dc17a426b069d",
                 "shasum": ""
             },
             "require": {
@@ -4264,7 +4264,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-03-12T22:10:06+00:00"
+            "time": "2024-04-08T21:27:53+00:00"
         },
         {
             "name": "monolog/monolog",

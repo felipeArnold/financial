@@ -34,8 +34,7 @@ class Lead extends Model
                         ->label('Nome')
                         ->required(),
                     Document::make('document')
-                        ->label('CPF/CNPJ')
-                    ,
+                        ->label('CPF/CNPJ'),
                     TextInput::make('email')
                         ->label('E-mail'),
                     PhoneNumber::make('phone')

@@ -18,9 +18,9 @@ class BusinessStages extends Model
         'name'
     ];
 
-//    protected $attributes = [
-//        'order' => 0
-//    ];
+    protected $attributes = [
+        'order' => 0
+    ];
 
     public function funnels(): BelongsTo
     {
