@@ -80,6 +80,11 @@ class Tenant extends Model
         return $this->hasMany(Lead::class);
     }
 
+    public function productsCategories(): HasMany
+    {
+        return $this->hasMany(ProductCategory::class);
+    }
+
     public function getFilamentAvatarUrl(): ?string
     {
         return Storage::url($this->avatar);

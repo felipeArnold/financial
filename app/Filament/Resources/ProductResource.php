@@ -19,6 +19,8 @@ class ProductResource extends Resource
 
     protected static ?string $label = 'Produtos';
 
+    protected static ?string $navigationGroup = 'Serviços';
+
     protected static ?string $navigationIcon = 'heroicon-o-book-open';
 
     public static function form(Form $form): Form
@@ -33,12 +35,19 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nome')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('price')
-                    ->label('Valor')
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label('Categoria')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('stock')
+                    ->label('Estoque')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('cost_price')
+                    ->label('Preço de custo')
                     ->money('BRL')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('description')
-                    ->label('Descrição')
+                Tables\Columns\TextColumn::make('sale_price')
+                    ->label('Preço de venda')
+                    ->money('BRL')
                     ->searchable(),
             ])
             ->filters([

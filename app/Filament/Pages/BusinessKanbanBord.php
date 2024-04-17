@@ -3,10 +3,17 @@
 namespace App\Filament\Pages;
 
 use App\Models\Business;
+use App\Models\BusinessOrigins;
 use App\Models\BusinessStages;
 use Filament\Actions\CreateAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Split;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Leandrocfe\FilamentPtbrFormFields\Money;
 use Mokhosh\FilamentKanban\Pages\KanbanBoard;
 
 class BusinessKanbanBord extends KanbanBoard
@@ -68,6 +75,38 @@ class BusinessKanbanBord extends KanbanBoard
                 ->modalHeading('Criar negociação')
                 ->form(Business::getForm())
                 ->model(Business::class),
+        ];
+    }
+
+    protected function getEditModalFormSchema(null|int $recordId): array
+    {
+        return [
+            Split::make([
+                Section::make([
+                    TextInput::make('name')
+                        ->label('Nome')
+                        ->placeholder('Nome da negociação')
+                        ->required(),
+                    Money::make('valuation')
+                        ->label('Valor')
+                        ->placeholder('Valor da negociação')
+                        ->required(),
+                    DatePicker::make('closing_forecast')
+                        ->label('Previsão de fechamento')
+                        ->required(),
+                    DatePicker::make('closing_date')
+                        ->label('Data de fechamento')
+                        ->placeholder('Data de fechamento da negociação')
+                        ->required(),
+                ])
+                ->description('Informações da negociação'),
+                Section::make([
+                    Select::make('origin_id')
+                        ->label('Origem')
+                        ->placeholder('Selecione a origem da negociação')
+                        ->options(BusinessOrigins::query()->pluck('name', 'id')),
+                ]),
+            ]),
         ];
     }
 }

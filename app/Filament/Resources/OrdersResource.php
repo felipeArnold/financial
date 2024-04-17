@@ -26,6 +26,8 @@ class OrdersResource extends Resource
 
     protected static ?string $label = 'Ordens';
 
+    protected static ?string $navigationGroup = 'Serviços';
+
     protected static ?string $recordTitleAttribute = 'order_number';
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
