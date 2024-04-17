@@ -68,40 +68,42 @@ class LeadResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('generate_client')
-                        ->label('Gerar cliente')
-                        ->icon('heroicon-o-users')
-                        ->requiresConfirmation()
-                        ->action(function ($records) {
-                            foreach ($records as $record) {
-                                $client = Person::create([
-                                    'tenant_id' => auth()->user()->tenants()->first()->id,
-                                    'name' => $record->name,
-                                    'document' => $record->document,
-                                    'birth_date' => $record->birthday,
+                Tables\Actions\BulkAction::make('generate_client')
+                    ->label('Gerar cliente')
+                    ->icon('heroicon-o-users')
+                    ->requiresConfirmation()
+                    ->color('success')
+                    ->deselectRecordsAfterCompletion()
+                    ->action(function ($records) {
+                        foreach ($records as $record) {
+                            $client = Person::create([
+                                'tenant_id' => auth()->user()->tenants()->first()->id,
+                                'name' => $record->name,
+                                'document' => $record->document,
+                                'birth_date' => $record->birthday,
+                            ]);
+
+                            if ($record->email) {
+                                $client->emails()->create([
+                                    'address' => $record->email,
                                 ]);
-
-                                if ($record->email) {
-                                    $client->emails()->create([
-                                        'address' => $record->email,
-                                    ]);
-                                }
-
-                                if ($record->phone) {
-                                    $client->phones()->create([
-                                        'number' => $record->phone,
-                                    ]);
-                                }
                             }
 
-                            return Notification::make()
-                                ->title('Contas a receber geradas')
-                                ->body('As contas a receber foram geradas com sucesso')
-                                ->success()
-                                ->seconds(3)
-                                ->send();
-                        }),
+                            if ($record->phone) {
+                                $client->phones()->create([
+                                    'number' => $record->phone,
+                                ]);
+                            }
+                        }
+
+                        return Notification::make()
+                            ->title('Contas a receber geradas')
+                            ->body('As contas a receber foram geradas com sucesso')
+                            ->success()
+                            ->seconds(3)
+                            ->send();
+                    }),
+                Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
                 ExportBulkAction::make(),

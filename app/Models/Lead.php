@@ -32,16 +32,20 @@ class Lead extends Model
                 ->schema([
                     TextInput::make('name')
                         ->label('Nome')
-                        ->required(),
+                        ->rules('required'),
                     Document::make('document')
                         ->label('CPF/CNPJ'),
                     TextInput::make('email')
-                        ->label('E-mail'),
+                        ->label('E-mail')
+                        ->rules([
+                            'nullable',
+                            'email:rfc,dns'
+                        ]),
                     PhoneNumber::make('phone')
                         ->label('Telefone')
-                        ->required(),
+                        ->rules('required'),
                     DatePicker::make('birthday')
-                        ->label('Data de nascimento'),
+                        ->label('Data de nascimento')
                 ])
             ->columns(2),
         ];

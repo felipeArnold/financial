@@ -39,8 +39,7 @@ class Phones extends Model
                 ->schema([
                     PhoneNumber::make('number')
                         ->label('Telefone')
-                        ->required()
-                        ->maxLength(255),
+                        ->rules('required'),
                 ])
                 ->addActionLabel('Adicionar telefone')
                 ->collapsible()

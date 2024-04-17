@@ -39,7 +39,7 @@ class Business extends Model
                         ->label('Pessoa')
                         ->options(Lead::pluck('name', 'id'))
                         ->searchable()
-                        ->required()
+                        ->rules('required')
                         ->createOptionForm(function () {
                             return Lead::getForm();
                         })
@@ -73,22 +73,22 @@ class Business extends Model
                 ->schema([
                     TextInput::make('name')
                         ->label('Nome do negócio')
-                        ->required()
+                        ->rules('required')
                         ->columnSpan(2),
                     Money::make('valuation')
                         ->label('Valor')
-                        ->required(),
+                        ->rules('required'),
                     Select::make('status')
                         ->label('Status')
                         ->options(StatusEnum::class)
                         ->default(StatusEnum::RUNNING)
-                        ->required()
+                        ->rules('required')
                         ->native(false),
                     Select::make('responsible_id')
                         ->label('Responsável')
                         ->options(User::pluck('name', 'id'))
                         ->default(auth()->id())
-                        ->required()
+                        ->rules('required')
                         ->native(false),
                     DatePicker::make('closing_forecast')
                         ->label('Previsão de fechamento'),
@@ -109,7 +109,7 @@ class Business extends Model
                         ->label('Estágio')
                         ->options(BusinessStages::pluck('name', 'id'))
                         ->reactive()
-                        ->required()
+                        ->rules('required')
                         ->native(false),
 
                 ])->columns(2),

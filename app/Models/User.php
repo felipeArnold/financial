@@ -93,11 +93,10 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasTenant
                 ->schema([
                     Forms\Components\TextInput::make('name')
                         ->label('Nome')
-                        ->required(),
+                        ->rules(['required']),
                     Forms\Components\TextInput::make('email')
                         ->label('E-mail')
-                        ->email()
-                        ->required(),
+                        ->rules(['required', 'email']),
                     Forms\Components\TextInput::make('password')
                         ->label('Senha')
                         ->password()

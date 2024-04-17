@@ -39,10 +39,9 @@ class Emails extends Model
                 ->schema([
                     TextInput::make('address')
                         ->label('E-mail')
-                        ->email()
                         ->rules([
-                            'required',
-                            'max:50',
+                            'nullable',
+                            'email:rfc,dns',
                         ]),
                 ])
                 ->addActionLabel('Adicionar e-mail')

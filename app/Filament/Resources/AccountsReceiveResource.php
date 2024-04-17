@@ -50,8 +50,6 @@ class AccountsReceiveResource extends Resource
         return $form->schema(AccountsReceive::getForm());
     }
 
-
-
     public static function table(Table $table): Table
     {
         $query = AccountsReceiveInstallments::query()

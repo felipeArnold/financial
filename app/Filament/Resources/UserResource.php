@@ -23,7 +23,7 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
-    protected static ?string $cluster = Settings::class;
+    protected static ?string $navigationGroup = 'Configurações';
 
     public static function form(Form $form): Form
     {

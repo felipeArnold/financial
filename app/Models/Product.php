@@ -50,6 +50,9 @@ class Product extends Model
                         ]),
                     Money::make('price')
                         ->label('Preço')
+                        ->rules([
+                            'required',
+                        ])
                         ->columnSpan(['sm' => 6]),
                     MarkdownEditor::make('description')
                         ->label('Descrição')

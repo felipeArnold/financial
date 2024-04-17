@@ -36,7 +36,7 @@ class BusinessStages extends Model
                 ->simple(
                     TextInput::make('name')
                         ->label('Nome')
-                        ->required(),
+                        ->rules('required')
                 )
                 ->cloneable()
                 ->reorderableWithButtons()
