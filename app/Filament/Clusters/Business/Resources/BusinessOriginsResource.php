@@ -4,15 +4,11 @@ namespace App\Filament\Clusters\Business\Resources;
 
 use App\Filament\Clusters\Business;
 use App\Filament\Clusters\Business\Resources\BusinessOriginsResource\Pages;
-use App\Filament\Clusters\Business\Resources\BusinessOriginsResource\RelationManagers;
 use App\Models\BusinessOrigins;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class BusinessOriginsResource extends Resource
@@ -22,7 +18,6 @@ class BusinessOriginsResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $cluster = Business::class;
-
 
     protected static ?string $label = 'Origens';
 

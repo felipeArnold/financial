@@ -3,23 +3,21 @@
 namespace App\Models;
 
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BusinessStages extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name'
+        'name',
     ];
 
     protected $attributes = [
-        'order' => 0
+        'order' => 0,
     ];
 
     public function funnels(): BelongsTo
@@ -40,7 +38,7 @@ class BusinessStages extends Model
                 )
                 ->cloneable()
                 ->reorderableWithButtons()
-                ->defaultItems(2)
+                ->defaultItems(2),
         ];
     }
 }

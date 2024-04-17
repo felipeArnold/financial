@@ -3,11 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Clusters\Business\Resources\LeadResource\Pages;
-use App\Filament\Clusters\Business\Resources\LeadResource\RelationManagers;
-use App\Models\AccountsReceive;
 use App\Models\Lead;
 use App\Models\Person;
-use Filament\Actions\Action;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;

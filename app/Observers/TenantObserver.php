@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Support\Str;
-use App\Models\{Tenant, User};
 
 class TenantObserver
 {
-
     public function creating(Tenant $tenant): void
     {
         $tenant->slug = Str::slug($tenant->name);

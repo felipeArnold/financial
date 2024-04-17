@@ -2,21 +2,15 @@
 
 namespace App\Filament\Pages;
 
-use App\Enums\BusinessEnum;
 use App\Models\Business;
 use App\Models\BusinessStages;
-use App\Models\Lead;
-use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Mokhosh\FilamentKanban\Pages\KanbanBoard;
 
 class BusinessKanbanBord extends KanbanBoard
 {
-
     protected static string $model = Business::class;
 
     protected static ?string $label = 'Negócios';
@@ -26,7 +20,6 @@ class BusinessKanbanBord extends KanbanBoard
     protected static ?string $navigationGroup = 'Negócios';
 
     protected static string $recordStatusAttribute = 'stage_id';
-
 
     public function getTitle(): string
     {
@@ -54,7 +47,7 @@ class BusinessKanbanBord extends KanbanBoard
             'value' => $record->value,
             'closing_forecast' => $record->closing_forecast,
             'closing_date' => $record->closing_date,
-            'created' => $record->created_at
+            'created' => $record->created_at,
         ]);
     }
 
@@ -63,7 +56,7 @@ class BusinessKanbanBord extends KanbanBoard
         $record = Business::findOrFail($recordId);
 
         $record->update([
-            'stage_id' => $status
+            'stage_id' => $status,
         ]);
     }
 
@@ -74,7 +67,7 @@ class BusinessKanbanBord extends KanbanBoard
                 ->label('Criar negociação')
                 ->modalHeading('Criar negociação')
                 ->form(Business::getForm())
-                ->model(Business::class)
+                ->model(Business::class),
         ];
     }
 }

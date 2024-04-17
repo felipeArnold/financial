@@ -20,6 +20,7 @@
         "leandrocfe/filament-ptbr-form-fields": "^3.0",
         "mokhosh/filament-kanban": "^2.8",
         "pxlrbt/filament-excel": "^2.3",
+        "saade/filament-fullcalendar": "^3.2",
         "shuvroroy/filament-spatie-laravel-backup": "^2.1"
     },
     "require-dev": {

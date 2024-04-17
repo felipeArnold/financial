@@ -3,9 +3,7 @@
 namespace App\Models;
 
 use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Wizard;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -84,8 +82,8 @@ class AccountsReceive extends Model
                     ->icon('heroicon-o-currency-dollar')
                     ->schema(AccountsReceiveInstallments::getForm()),
             ])
-            ->columnSpan(2)
-                ->skippable()
+                ->columnSpan(2)
+                ->skippable(),
         ];
     }
 }

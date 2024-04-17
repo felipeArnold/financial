@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Helpers\FormatterHelper;
 use Filament\Forms;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -86,7 +85,7 @@ class Person extends Model
                         ->schema(Addresses::getForm()),
                 ])
                 ->persistTab()
-                ->columnSpan(2)
+                ->columnSpan(2),
         ];
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AccountsReceiveResource\Pages;
-use App\Filament\Resources\AccountsReceiveResource\RelationManagers;
 use App\Models\AccountsReceive;
 use App\Models\AccountsReceiveInstallments;
 use App\Models\Person;
@@ -21,12 +20,10 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
-use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use Leandrocfe\FilamentPtbrFormFields\Money;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class AccountsReceiveResource extends Resource
@@ -58,7 +55,9 @@ class AccountsReceiveResource extends Resource
                 'people.name as person_name',
                 'users.name as user_name',
                 'accounts_receives.id as idAccount',
-                'accounts_receive_installments.id as id',
+                'accounts_receive_installments.id as idParcel',
+                'accounts_receives.id as id',
+                'accounts_receives.parcels as parcels',
                 'accounts_receive_installments.status as status',
                 'accounts_receive_installments.due_date as due_date',
                 'accounts_receive_installments.pay_date as pay_date',
@@ -90,7 +89,9 @@ class AccountsReceiveResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('parcel')
                     ->label('Parcela')
-                    ->formatStateUsing(fn (string $state): string => Str::padLeft($state, 2, '0'))
+                    ->formatStateUsing(function ($record) {
+                        return Str::padLeft($record->parcel, 2, '0').'/'.Str::padLeft($record->parcels, 2, '0');
+                    })
                     ->toggleable()
                     ->sortable()
                     ->searchable(),
@@ -229,7 +230,7 @@ class AccountsReceiveResource extends Resource
                     ])
                     ->action(function (Collection $records, array $data) {
                         AccountsReceiveInstallments::query()
-                            ->whereIn('id', $records->pluck('id'))
+                            ->whereIn('id', $records->pluck('idParcel'))
                             ->where('status', '<>', 'paid')
                             ->update([
                                 'status' => 'paid',
@@ -265,13 +266,6 @@ class AccountsReceiveResource extends Resource
                     ->label('Filter'),
             );
     }
-
-//    public static function getRelations(): array
-//    {
-//        return [
-//            RelationManagers\InstallmentsRelationManager::class,
-//        ];
-//    }
 
     public static function getPages(): array
     {

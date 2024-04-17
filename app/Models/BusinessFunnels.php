@@ -2,26 +2,23 @@
 
 namespace App\Models;
 
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Leandrocfe\FilamentPtbrFormFields\Money;
 
 class BusinessFunnels extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name'
+        'name',
     ];
 
     protected $attributes = [
-        'order' => 0
+        'order' => 0,
     ];
 
     public function tenant(): BelongsTo
@@ -55,7 +52,7 @@ class BusinessFunnels extends Model
                 ])->columns(2),
             Section::make('Informações dos estágios')
                 ->description('Preencha as informações do estágios')
-                ->schema(BusinessStages::getForm())
+                ->schema(BusinessStages::getForm()),
         ];
     }
 }

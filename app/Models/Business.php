@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\Business\StatusEnum;
-use App\Enums\BusinessEnum;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -92,19 +91,19 @@ class Business extends Model
                         ->native(false),
                     DatePicker::make('closing_forecast')
                         ->label('Previsão de fechamento'),
-//                    Select::make('funnel_id')
-//                        ->label('Funil')
-//                        ->options(BusinessFunnels::pluck('name', 'id'))
-//                        ->reactive()
-//                        ->afterStateUpdated(function ($state, $set, $get) {
-//
-//                            $funnel = BusinessFunnels::find($state);
-//                            $stages = $funnel->stages;
-////                            $set('stage_id', $stages->pluck('name', 'id')->toArray());
-//                            $set('stage_id', $stages->pluck('name', 'id')->toArray());
-//                        })
-//                        ->required()
-//                        ->native(false),
+                    //                    Select::make('funnel_id')
+                    //                        ->label('Funil')
+                    //                        ->options(BusinessFunnels::pluck('name', 'id'))
+                    //                        ->reactive()
+                    //                        ->afterStateUpdated(function ($state, $set, $get) {
+                    //
+                    //                            $funnel = BusinessFunnels::find($state);
+                    //                            $stages = $funnel->stages;
+                    ////                            $set('stage_id', $stages->pluck('name', 'id')->toArray());
+                    //                            $set('stage_id', $stages->pluck('name', 'id')->toArray());
+                    //                        })
+                    //                        ->required()
+                    //                        ->native(false),
                     Select::make('stage_id')
                         ->label('Estágio')
                         ->options(BusinessStages::pluck('name', 'id'))

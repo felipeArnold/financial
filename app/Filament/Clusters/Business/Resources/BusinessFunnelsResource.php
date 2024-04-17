@@ -4,15 +4,11 @@ namespace App\Filament\Clusters\Business\Resources;
 
 use App\Filament\Clusters\Business;
 use App\Filament\Clusters\Business\Resources\BusinessFunnelsResource\Pages;
-use App\Filament\Clusters\Business\Resources\BusinessFunnelsResource\RelationManagers;
 use App\Models\BusinessFunnels;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class BusinessFunnelsResource extends Resource
 {

@@ -80,7 +80,6 @@ class Tenant extends Model
         return $this->hasMany(Lead::class);
     }
 
-
     public function getFilamentAvatarUrl(): ?string
     {
         return Storage::url($this->avatar);

@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 use Leandrocfe\FilamentPtbrFormFields\Money;
 
 #[ObservedBy(AccountsReceiveInstallmentsObserver::class)]
@@ -49,54 +48,54 @@ class AccountsReceiveInstallments extends Model
     {
         return [
             Section::make('Dados da parcela')
-            ->columns(2)
-            ->schema([
-                Money::make('amount')
-                    ->label('Valor total')
-                    ->reactive()
-                    ->afterStateUpdated(function ($state, $set, $get) {
-                        $valueState = FormatterHelper::decimal($state);
+                ->columns(2)
+                ->schema([
+                    Money::make('amount')
+                        ->label('Valor total')
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, $set, $get) {
+                            $valueState = FormatterHelper::decimal($state);
 
-                        $set('installments', collect($get('installments'))->map(function ($installment) use ($get, $valueState) {
-                            return array_merge($installment, [
-                                'value' => FormatterHelper::decimal($valueState / $get('parcels')),
-                            ]);
-                        })->toArray());
-                    })
-                    ->required()
-                    ->default(0.00),
-                Select::make('parcels')
-                    ->label('Parcelas')
-                    ->required()
-                    ->options(fn () => collect(range(1, 99))->mapWithKeys(fn ($value) => [$value => $value]))
-                    ->native()
-                    ->reactive()
-                    ->afterStateUpdated(function ($state, $set, $get) {
-                        $installments = [];
+                            $set('installments', collect($get('installments'))->map(function ($installment) use ($get, $valueState) {
+                                return array_merge($installment, [
+                                    'value' => FormatterHelper::decimal($valueState / $get('parcels')),
+                                ]);
+                            })->toArray());
+                        })
+                        ->required()
+                        ->default(0.00),
+                    Select::make('parcels')
+                        ->label('Parcelas')
+                        ->required()
+                        ->options(fn () => collect(range(1, 99))->mapWithKeys(fn ($value) => [$value => $value]))
+                        ->native()
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, $set, $get) {
+                            $installments = [];
 
-                        $valueState = FormatterHelper::decimal($get('amount'));
+                            $valueState = FormatterHelper::decimal($get('amount'));
 
-                        for ($i = 1; $i <= $state; $i++) {
-                            $installments[] = [
-                                'parcel' => $i,
-                                'due_date' => now()->addMonth($i)->format('Y-m-d'),
-                                'pay_date' => null,
-                                'type' => TypePaymentEnum::bank_slip,
-                                'document_number' => null,
-                                'value' => FormatterHelper::decimal($valueState / $state),
-                                'discount' => 0,
-                                'interest' => 0,
-                                'fine' => 0,
-                                'value_paid' => 0,
-                                'status' => 'open',
-                                'observation' => null,
-                            ];
-                        }
+                            for ($i = 1; $i <= $state; $i++) {
+                                $installments[] = [
+                                    'parcel' => $i,
+                                    'due_date' => now()->addMonth($i)->format('Y-m-d'),
+                                    'pay_date' => null,
+                                    'type' => TypePaymentEnum::bank_slip,
+                                    'document_number' => null,
+                                    'value' => FormatterHelper::decimal($valueState / $state),
+                                    'discount' => 0,
+                                    'interest' => 0,
+                                    'fine' => 0,
+                                    'value_paid' => 0,
+                                    'status' => 'open',
+                                    'observation' => null,
+                                ];
+                            }
 
-                        $set('installments', $installments);
-                    })
-                    ->default(1),
-            ]),
+                            $set('installments', $installments);
+                        })
+                        ->default(1),
+                ]),
             Repeater::make('installments')
                 ->hiddenLabel()
                 ->addActionLabel('Adicionar parcela')
@@ -159,6 +158,40 @@ class AccountsReceiveInstallments extends Model
                         ->icon('heroicon-o-document-duplicate')
                         ->requiresConfirmation()
                         ->visible(
+                            function (Model $record) {
+                                if ($record) {
+                                    if ($record->status === 'open' || $record->id !== null) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        )
+                        ->action(function (array $arguments, Repeater $component, Model $record) {
+                            $itemData = $component->getItemState($arguments['item']);
+
+                            AccountsReceiveInstallments::create([
+                                'accounts_receive_id' => $record->id,
+                                'parcel' => $record->installments->count() + 1,
+                                'due_date' => Carbon::parse($itemData['due_date'])->addMonth(),
+                                'pay_date' => null,
+                                'value' => $itemData['value'],
+                                'discount' => $itemData['discount'],
+                                'interest' => $itemData['interest'],
+                                'fine' => $itemData['fine'],
+                                'value_paid' => $itemData['value_paid'],
+                                'status' => 'open',
+                                'observation' => $itemData['observation'],
+                            ]);
+
+                            return Notification::make()
+                                ->title('Parcela duplicada')
+                                ->body('A parcela foi duplicada com sucesso.')
+                                ->success()
+                                ->seconds(3)
+                                ->send();
+                        }),
+                    Action::make('pay')
+                        ->visible(
                             function ($record) {
                                 if ($record) {
                                     if ($record->status === 'open' || $record->id !== null) {
@@ -167,64 +200,38 @@ class AccountsReceiveInstallments extends Model
                                 }
                             }
                         )
-                        ->action(
-                            function ($record) {
-                                AccountsReceiveInstallments::created([
-                                    'accounts_receive_id' => $record->accounts_receive_id,
-                                    'parcel' => $record->parcel + 1,
-                                    'due_date' => Carbon::parse($record->due_date)->addMonth(),
-                                    'pay_date' => null,
-                                    'value' => $record->value,
-                                    'discount' => $record->discount,
-                                    'interest' => $record->interest,
-                                    'fine' => $record->fine,
-                                    'value_paid' => $record->value_paid,
-                                    'status' => 'open',
-                                    'observation' => $record->observation,
-                                ]);
-                            }
-                        ),
-                   Action::make('pay')
-                       ->visible(
-                           function ($record) {
-                               if ($record) {
-                                   if ($record->status === 'open' || $record->id !== null) {
-                                       return true;
-                                       }
-                               }
-                           }
-                       )
                         ->icon('heroicon-o-check-circle')
                         ->label('Marcar como pago')
-                       ->requiresConfirmation()
-                       ->visible(
-                           function ($record) {
-                               if ($record) {
-                                   if ($record->status === 'open' || $record->id !== null) {
-                                       return true;
-                                   }
-                               }
-                           }
-                       )
-                        ->action(
+                        ->requiresConfirmation()
+                        ->visible(
                             function ($record) {
+                                if ($record) {
+                                    if ($record->status === 'open' || $record->id !== null) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        )
+                        ->action(function (array $arguments, Repeater $component, $state) {
+                            $itemData = $component->getItemState($arguments['item']);
+                            $stateData = $component->getState();
+                            $stateData = $stateData[$arguments['item']];
 
-                                $record->update([
+                            AccountsReceiveInstallments::find($stateData['id'])
+                                ->update([
                                     'status' => 'paid',
                                     'pay_date' => now(),
-                                    'value_paid' => $record->value,
+                                    'value_paid' => FormatterHelper::decimal($itemData['value']),
                                 ]);
 
-                                Notification::make()
-                                    ->title('Parcela paga')
-                                    ->body('A parcela foi marcada como paga com sucesso.')
-                                    ->success()
-                                    ->seconds(3)
-                                    ->send();
-                            }
-                        ),
+                            Notification::make()
+                                ->title('Parcela paga')
+                                ->body('A parcela foi marcada como paga com sucesso.')
+                                ->success()
+                                ->seconds(3)
+                                ->send();
+                        }),
                     Action::make('pay_and_create_another')
-//                        ->disabled(fn ($record) => $record->status !== 'open')
                         ->icon('heroicon-o-check-circle')
                         ->label('Marcar como pago e criar outra')
                         ->requiresConfirmation()
@@ -237,28 +244,31 @@ class AccountsReceiveInstallments extends Model
                                 }
                             }
                         )
-                        ->action(
-                            function ($record) {
+                        ->action(function (array $arguments, Repeater $component, $record, $state) {
+                            $itemData = $component->getItemState($arguments['item']);
+                            $stateData = $component->getState();
+                            $stateData = $stateData[$arguments['item']];
 
-                                $record->update([
+                            AccountsReceiveInstallments::find($stateData['id'])
+                                ->update([
                                     'status' => 'paid',
                                     'pay_date' => now(),
-                                    'value_paid' => $record->value,
+                                    'value_paid' => FormatterHelper::decimal($itemData['value']),
                                 ]);
 
-                                AccountsReceiveInstallments::create([
-                                    'accounts_receive_id' => $record->accounts_receive_id,
-                                    'parcel' => $record->parcel + 1,
-                                    'due_date' => Carbon::parse($record->due_date)->addMonth(),
-                                    'pay_date' => null,
-                                    'value' => $record->value,
-                                    'discount' => $record->discount,
-                                    'interest' => $record->interest,
-                                    'fine' => $record->fine,
-                                    'value_paid' => $record->value_paid,
-                                    'status' => 'open',
-                                    'observation' => $record->observation,
-                                ]);
+                            AccountsReceiveInstallments::create([
+                                'accounts_receive_id' => $record->id,
+                                'parcel' => $record->installments->count() + 1,
+                                'due_date' => Carbon::parse($itemData['due_date'])->addMonth(),
+                                'pay_date' => null,
+                                'value' => $itemData['value'],
+                                'discount' => $itemData['discount'],
+                                'interest' => $itemData['interest'],
+                                'fine' => $itemData['fine'],
+                                'value_paid' => $itemData['value_paid'],
+                                'status' => 'open',
+                                'observation' => $itemData['observation'],
+                            ]);
 
                                 Notification::make()
                                     ->title('Parcela paga')

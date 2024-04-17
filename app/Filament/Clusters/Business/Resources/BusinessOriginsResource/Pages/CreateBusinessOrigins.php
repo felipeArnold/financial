@@ -3,7 +3,6 @@
 namespace App\Filament\Clusters\Business\Resources\BusinessOriginsResource\Pages;
 
 use App\Filament\Clusters\Business\Resources\BusinessOriginsResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateBusinessOrigins extends CreateRecord

@@ -2,14 +2,12 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\Auth\EditProfile;
 use App\Filament\Pages\Tenancy\EditTeamProfile;
 use App\Filament\Pages\Tenancy\RegisterTeam;
 use App\Filament\Resources\OrdersResource\Widgets\CustomersChart;
 use App\Filament\Resources\OrdersResource\Widgets\OrdersChart;
 use App\Filament\Resources\OrdersResource\Widgets\StatsOverview;
 use App\Models\Tenant;
-use BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -18,6 +16,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\MaxWidth;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -52,11 +51,13 @@ class AppPanelProvider extends PanelProvider
             ])
             ->brandLogo(fn () => view('components.logo'))
             ->plugins([
-                FilamentSpatieLaravelBackupPlugin::make()
+                FilamentSpatieLaravelBackupPlugin::make(),
             ])
             ->databaseNotifications()
             ->databaseNotificationsPolling('60s')
             ->sidebarCollapsibleOnDesktop()
+//            ->topNavigation()
+            ->spa()
             ->colors([
                 'danger' => Color::Rose,
                 'gray' => Color::Gray,
@@ -65,7 +66,7 @@ class AppPanelProvider extends PanelProvider
                 'success' => Color::Emerald,
                 'warning' => Color::Orange,
             ])
-            ->maxContentWidth('12x1')
+            ->maxContentWidth(MaxWidth::Full)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')

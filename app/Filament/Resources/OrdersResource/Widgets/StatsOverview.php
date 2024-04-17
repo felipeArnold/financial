@@ -25,7 +25,7 @@ class StatsOverview extends BaseWidget
                 ->chart([7, 2, 10])
                 ->color('success'),
             stat::make('Ordens', $orders->pluck('total')->sum())
-                ->description($orders->count() . ' criadas')
+                ->description($orders->count().' criadas')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->chart($orders->pluck('count')->toArray())
                 ->color('success'),

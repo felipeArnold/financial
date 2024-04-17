@@ -2,8 +2,6 @@
 
 namespace App\Helpers;
 
-use App\Models\Property\Property;
-use Illuminate\Support\Str;
 use NumberFormatter;
 
 abstract class FormatterHelper
@@ -48,7 +46,7 @@ abstract class FormatterHelper
     {
         $value = self::onlyNumbers($value);
 
-        return substr($value, 6, 2) . substr($value, 4, 2) . substr($value, 0, 4);
+        return substr($value, 6, 2).substr($value, 4, 2).substr($value, 0, 4);
     }
 
     public static function money(mixed $value, bool $currency = false): string

@@ -3,12 +3,9 @@
 namespace App\Filament\Resources\AccountsReceiveResource\Pages;
 
 use App\Filament\Resources\AccountsReceiveResource;
-use App\Filament\Resources\OrdersResource;
 use Filament\Actions;
-use Filament\Pages\Concerns\ExposesTableToWidgets;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class ListAccountsReceives extends ListRecords
 {

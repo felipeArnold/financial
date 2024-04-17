@@ -9,10 +9,8 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\Wizard;
-use Filament\Forms\Set;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -65,8 +63,8 @@ class Orders extends Model
         return [
             Wizard::make([
                 Wizard\Step::make('Dados gerais')
-                   ->description('Insira as informações gerais do pedido.')
-                   ->icon('heroicon-o-information-circle')
+                    ->description('Insira as informações gerais do pedido.')
+                    ->icon('heroicon-o-information-circle')
                     ->schema([
                         ToggleButtons::make('type')
                             ->label('Tipo')
@@ -174,7 +172,7 @@ class Orders extends Model
                                     ->disabled()
                                     ->default(0),
                             ])
-                            ->columns(2)
+                            ->columns(2),
                     ]),
                 Wizard\Step::make('Observações')
                     ->description('Adicione observações ao pedido.')
@@ -186,11 +184,11 @@ class Orders extends Model
                             ->label('Observação'),
                         MarkdownEditor::make('note')
                             ->label('Nota'),
-                        ])
-                    ->columns(2)
+                    ])
+                    ->columns(2),
             ])
-            ->skippable()
-            ->columnSpan(2)
+                ->skippable()
+                ->columnSpan(2),
 
         ];
     }

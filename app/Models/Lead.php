@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Leandrocfe\FilamentPtbrFormFields\PhoneNumber;
 use Leandrocfe\FilamentPtbrFormFields\Document;
+use Leandrocfe\FilamentPtbrFormFields\PhoneNumber;
 
 class Lead extends Model
 {
@@ -39,15 +39,15 @@ class Lead extends Model
                         ->label('E-mail')
                         ->rules([
                             'nullable',
-                            'email:rfc,dns'
+                            'email:rfc,dns',
                         ]),
                     PhoneNumber::make('phone')
                         ->label('Telefone')
                         ->rules('required'),
                     DatePicker::make('birthday')
-                        ->label('Data de nascimento')
+                        ->label('Data de nascimento'),
                 ])
-            ->columns(2),
+                ->columns(2),
         ];
     }
 }
