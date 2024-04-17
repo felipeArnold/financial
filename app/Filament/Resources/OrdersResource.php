@@ -108,39 +108,42 @@ class OrdersResource extends Resource
                 ]),
             ])
             ->bulkActions([
+                Tables\Actions\BulkAction::make('generate_account_receivable')
+                    ->label('Gerar contas a receber')
+                    ->icon('heroicon-o-currency-dollar')
+                    ->requiresConfirmation()
+                    ->deselectRecordsAfterCompletion()
+                    ->color('success')
+                    ->action(function ($records) {
+                        foreach ($records as $record) {
+                            $accountReceivable = AccountsReceive::create([
+                                'tenant_id' => $record->tenant_id,
+                                'person_id' => $record->person_id,
+                                'user_id' => $record->user_id,
+                                'description' => $record->description,
+                                'title' => $record->order_number,
+                                'amount' => $record->total,
+                                'status' => 'open',
+                            ]);
+
+                            $accountReceivable->installments()->create([
+                                'document_number' => $record->order_number,
+                                'value' => $record->total,
+                                'due_date' => $record->initial_date,
+                                'status' => 'open',
+                            ]);
+
+                            $record->update(['status' => 'approved']);
+                        }
+
+                        return Notification::make()
+                            ->title('Contas a receber geradas')
+                            ->body('As contas a receber foram geradas com sucesso')
+                            ->success()
+                            ->seconds(3)
+                            ->send();
+                    }),
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('generate_account_receivable')
-                        ->label('Gerar contas a receber')
-                        ->icon('heroicon-o-currency-dollar')
-                        ->requiresConfirmation()
-                        ->action(function ($records) {
-                            foreach ($records as $record) {
-                                $accountReceivable = AccountsReceive::create([
-                                    'tenant_id' => $record->tenant_id,
-                                    'person_id' => $record->person_id,
-                                    'user_id' => $record->user_id,
-                                    'description' => $record->description,
-                                    'title' => $record->order_number,
-                                    'status' => 'open',
-                                ]);
-
-                                $accountReceivable->installments()->create([
-                                    'document_number' => $record->order_number,
-                                    'value' => $record->total,
-                                    'due_date' => $record->initial_date,
-                                    'status' => 'open',
-                                ]);
-
-                                $record->update(['status' => 'approved']);
-                            }
-
-                            return Notification::make()
-                                ->title('Contas a receber geradas')
-                                ->body('As contas a receber foram geradas com sucesso')
-                                ->success()
-                                ->seconds(3)
-                                ->send();
-                        }),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
                 ExportBulkAction::make(),

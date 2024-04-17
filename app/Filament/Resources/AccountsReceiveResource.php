@@ -11,6 +11,7 @@ use App\Models\User;
 use Filament\Actions\RestoreAction;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
@@ -22,7 +23,10 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Leandrocfe\FilamentPtbrFormFields\Money;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class AccountsReceiveResource extends Resource
@@ -55,8 +59,11 @@ class AccountsReceiveResource extends Resource
                 'accounts_receives.*',
                 'people.name as person_name',
                 'users.name as user_name',
+                'accounts_receives.id as idAccount',
+                'accounts_receive_installments.id as id',
                 'accounts_receive_installments.status as status',
                 'accounts_receive_installments.due_date as due_date',
+                'accounts_receive_installments.pay_date as pay_date',
                 'accounts_receive_installments.parcel as parcel',
                 'accounts_receive_installments.value as value',
             )
@@ -97,6 +104,12 @@ class AccountsReceiveResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('due_date')
                     ->label('Vencimento')
+                    ->dateTime(format: 'd/m/Y')
+                    ->toggleable()
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('pay_date')
+                    ->label('Pagamento')
                     ->dateTime(format: 'd/m/Y')
                     ->toggleable()
                     ->sortable()
@@ -162,7 +175,6 @@ class AccountsReceiveResource extends Resource
                                 }
                             );
                     }),
-
                 Tables\Filters\SelectFilter::make('user_id')
                     ->label('Responsável')
                     ->options(fn () => User::all()->pluck('name', 'id')->toArray())
@@ -194,11 +206,45 @@ class AccountsReceiveResource extends Resource
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
-                    DeleteAction::make(),
+                    DeleteAction::make()
+                        ->hidden(fn (Model $record): bool => $record->status === 'paid'),
                     RestoreAction::make(),
                 ]),
             ])
             ->bulkActions([
+                Tables\Actions\BulkAction::make('receive')
+                    ->label('Receber contas')
+                    ->icon('heroicon-o-currency-dollar')
+                    ->requiresConfirmation()
+                    ->color('success')
+                    ->deselectRecordsAfterCompletion()
+                    ->form([
+                        Forms\Components\DatePicker::make('payment_date')
+                            ->label('Data do pagamento')
+                            ->default(now())
+                            ->rules([
+                                'required',
+                            ])
+                            ->validationMessages([
+                                'required' => 'A data do pagamento é obrigatória',
+                            ]),
+                    ])
+                    ->action(function (Collection $records, array $data) {
+                        AccountsReceiveInstallments::query()
+                            ->whereIn('id', $records->pluck('id'))
+                            ->where('status', '<>', 'paid')
+                            ->update([
+                                'status' => 'paid',
+                                'pay_date' => $data['payment_date'],
+                            ]);
+
+                        return Notification::make()
+                            ->title('Pagamento efetuado')
+                            ->body('As contas selecionadas foram marcadas como pagas com sucesso')
+                            ->success()
+                            ->seconds(3)
+                            ->send();
+                    }),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),

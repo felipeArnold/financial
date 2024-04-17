@@ -47,7 +47,6 @@ class ProductResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    ViewAction::make(),
                     EditAction::make(),
                     DeleteAction::make(),
                 ]),

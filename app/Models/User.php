@@ -102,12 +102,14 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasTenant
                         ->label('Senha')
                         ->password()
                         ->revealable()
-                        ->required(),
+                        ->required(fn(string $operation): bool => $operation === 'create')
+                        ->dehydrated(fn(?string $state) => filled($state)),
                     Forms\Components\TextInput::make('password_confirmation')
                         ->label('Confirme a senha')
                         ->password()
                         ->revealable()
-                        ->required(),
+                        ->required(fn(string $operation): bool => $operation === 'create')
+                        ->dehydrated(fn(?string $state) => filled($state)),
                     FileUpload::make('avatar')
                         ->label('Avatar')
                         ->image()
