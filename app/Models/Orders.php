@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Orders\StatusEnum;
 use App\Enums\Orders\TypeEnum;
+use App\Filament\Forms\Components\PtbrMoney;
 use App\Observers\OrdersObserver;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\MarkdownEditor;
@@ -140,7 +141,7 @@ class Orders extends Model
                     ->description('Adicione os produtos ao pedido.')
                     ->icon('heroicon-o-shopping-cart')
                     ->schema([
-                        Money::make('total')
+                        PtbrMoney::make('total')
                             ->label('Valor total')
                             ->disabled()
                             ->required()
@@ -165,7 +166,7 @@ class Orders extends Model
                                     ->required()
                                     ->columnSpan(1)
                                     ->native(false),
-                                Money::make('price')
+                                PtbrMoney::make('price')
                                     ->label('Preço')
                                     ->required()
                                     ->columnSpan(1)

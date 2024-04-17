@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Business\StatusEnum;
+use App\Filament\Forms\Components\PtbrMoney;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -74,7 +75,7 @@ class Business extends Model
                         ->label('Nome do negócio')
                         ->rules('required')
                         ->columnSpan(2),
-                    Money::make('valuation')
+                    PtbrMoney::make('valuation')
                         ->label('Valor')
                         ->rules('required'),
                     Select::make('status')

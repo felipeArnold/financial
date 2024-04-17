@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AccountsReceive\TypePaymentEnum;
+use App\Filament\Forms\Components\PtbrMoney;
 use App\Helpers\FormatterHelper;
 use App\Observers\AccountsReceiveInstallmentsObserver;
 use Carbon\Carbon;
@@ -50,7 +51,7 @@ class AccountsReceiveInstallments extends Model
             Section::make('Dados da parcela')
                 ->columns(2)
                 ->schema([
-                    Money::make('amount')
+                    PtbrMoney::make('amount')
                         ->label('Valor total')
                         ->reactive()
                         ->afterStateUpdated(function ($state, $set, $get) {
@@ -113,19 +114,19 @@ class AccountsReceiveInstallments extends Model
                         ->default(TypePaymentEnum::bank_slip),
                     TextInput::make('document_number')
                         ->label('Número do documento'),
-                    Money::make('value')
+                    PtbrMoney::make('value')
                         ->label('Valor')
                         ->required(),
-                    Money::make('discount')
+                    PtbrMoney::make('discount')
                         ->label('Desconto')
                         ->default(0.00),
-                    Money::make('interest')
+                    PtbrMoney::make('interest')
                         ->label('Juros')
                         ->default(0.00),
-                    Money::make('fine')
+                    PtbrMoney::make('fine')
                         ->label('Multa')
                         ->default(0.00),
-                    Money::make('value_paid')
+                    PtbrMoney::make('value_paid')
                         ->label('Valor pago')
                         ->default(0.00),
                     Select::make('status')

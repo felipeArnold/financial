@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Filament\Forms\Components\PtbrMoney;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -75,9 +76,9 @@ class Product extends Model
                     TextInput::make('stock')
                         ->label('Estoque')
                         ->numeric(),
-                    Money::make('cost_price')
+                    PtbrMoney::make('cost_price')
                         ->label('Preço de custo'),
-                    Money::make('sale_price')
+                    PtbrMoney::make('sale_price')
                         ->label('Preço de venda'),
                     MarkdownEditor::make('description')
                         ->label('Descrição')
