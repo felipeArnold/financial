@@ -56,7 +56,7 @@ class BusinessFunnelsResource extends Resource
                 ]),
             ])
             ->emptyStateIcon('heroicon-o-rectangle-stack')
-            ->emptyStateHeading('Nenhum funil encontrad')
+            ->emptyStateHeading('Nenhum funil encontrado')
             ->emptyStateDescription('Crie um novo funil para começar');
     }
 
