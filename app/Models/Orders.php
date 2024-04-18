@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Leandrocfe\FilamentPtbrFormFields\Money;
 
@@ -57,6 +58,11 @@ class Orders extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function products(): HasMany
+    {
+        return $this->hasMany(OrderProducts::class, 'order_id');
     }
 
     public static function getForm(): array
@@ -140,41 +146,7 @@ class Orders extends Model
                 Wizard\Step::make('Produtos')
                     ->description('Adicione os produtos ao pedido.')
                     ->icon('heroicon-o-shopping-cart')
-                    ->schema([
-                        PtbrMoney::make('total')
-                            ->label('Valor total')
-                            ->disabled()
-                            ->required()
-                            ->default(0)
-                            ->afterStateHydrated(function ($component, $state) {
-                                if (isset($state->products)) {
-                                    $total = 0;
-                                    foreach ($state->products as $product) {
-                                        $total += $product['price'] * $product['quantity'];
-                                    }
-                                    $state->total = $total;
-                                }
-
-                                return $state;
-                            }),
-                        Repeater::make('products')
-                            ->schema([
-                                Select::make('products')
-                                    ->label('Produtos')
-                                    ->options(Product::all()->pluck('name', 'id'))
-                                    ->searchable()
-                                    ->required()
-                                    ->columnSpan(1)
-                                    ->native(false),
-                                PtbrMoney::make('price')
-                                    ->label('Preço')
-                                    ->required()
-                                    ->columnSpan(1)
-                                    ->disabled()
-                                    ->default(0),
-                            ])
-                            ->columns(2),
-                    ]),
+                    ->schema(OrderProducts::getForm()),
                 Wizard\Step::make('Observações')
                     ->description('Adicione observações ao pedido.')
                     ->icon('heroicon-o-user')
