@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Leandrocfe\FilamentPtbrFormFields\Money;
 
@@ -65,12 +66,16 @@ class Orders extends Model
         return $this->hasMany(OrderProducts::class, 'order_id');
     }
 
+    public function files(): MorphMany
+    {
+        return $this->morphMany(Files::class, 'fileable');
+    }
+
     public static function getForm(): array
     {
         return [
             Wizard::make([
                 Wizard\Step::make('Dados gerais')
-                    ->description('Insira as informações gerais do pedido.')
                     ->icon('heroicon-o-information-circle')
                     ->schema([
                         ToggleButtons::make('type')
@@ -144,11 +149,11 @@ class Orders extends Model
                     ])
                     ->columns(2),
                 Wizard\Step::make('Produtos')
-                    ->description('Adicione os produtos ao pedido.')
                     ->icon('heroicon-o-shopping-cart')
                     ->schema(OrderProducts::getForm()),
+                Wizard\Step::make('Arquivos')
+                    ->schema(Files::getForm()),
                 Wizard\Step::make('Observações')
-                    ->description('Adicione observações ao pedido.')
                     ->icon('heroicon-o-user')
                     ->schema([
                         MarkdownEditor::make('description')
