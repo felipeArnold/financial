@@ -58,6 +58,12 @@ class AppPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
 //            ->topNavigation()
             ->spa()
+            ->navigationGroups([
+                'Financeiro',
+                'Negócios',
+                'Serviços',
+                'Configurações'
+            ])
             ->colors([
                 'danger' => Color::Rose,
                 'gray' => Color::Gray,
