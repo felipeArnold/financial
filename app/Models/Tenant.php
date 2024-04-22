@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Tenant\PlansEnum;
 use App\Enums\Tenant\TypeTenantEnum;
 use App\Observers\TenantObserver;
 use Filament\Forms\Components\FileUpload;
@@ -28,7 +29,8 @@ class Tenant extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
-        'type' => TypeTenantEnum::class
+        'type' => TypeTenantEnum::class,
+        'plans' => PlansEnum::class,
     ];
 
     public function members(): BelongsToMany
@@ -118,6 +120,15 @@ class Tenant extends Model
                                     TypeTenantEnum::VEHICLES->value => TypeTenantEnum::VEHICLES->getLabel(),
                                     TypeTenantEnum::MECHANICS->value => TypeTenantEnum::MECHANICS->getLabel(),
                                     TypeTenantEnum::OTHERS->value => TypeTenantEnum::OTHERS->getLabel(),
+                                ]),
+                            ToggleButtons::make('plans')
+                                ->label('Plano')
+                                ->inline()
+                                ->default(PlansEnum::FREE)
+                                ->options([
+                                    PlansEnum::TEST->value => PlansEnum::TEST->getLabel(),
+                                    PlansEnum::FREE->value => PlansEnum::FREE->getLabel(),
+                                    PlansEnum::PREMIUM->value => PlansEnum::PREMIUM->getLabel(),
                                 ]),
                             FileUpload::make('avatar')
                                 ->label('Avatar')

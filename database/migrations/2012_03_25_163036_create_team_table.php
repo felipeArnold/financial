@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->string('document', 14)->nullable();
             $table->enum('type', ['vehicles', 'mechanics', 'others'])->default('others');
+            $table->enum('plans', ['test', 'free', 'premium'])->default('free');
             $table->timestamps();
         });
 
