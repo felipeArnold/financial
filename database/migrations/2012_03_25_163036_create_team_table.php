@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('slug');
             $table->string('avatar')->nullable();
             $table->string('document', 14)->nullable();
+            $table->enum('type', ['vehicles', 'mechanics', 'others'])->default('others');
             $table->timestamps();
         });
 

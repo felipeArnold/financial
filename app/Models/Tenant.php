@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Enums\Tenant\TypeTenantEnum;
 use App\Observers\TenantObserver;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Split;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +26,10 @@ class Tenant extends Model
     //    use HasFactory;
 
     protected $guarded = ['id'];
+
+    protected $casts = [
+        'type' => TypeTenantEnum::class
+    ];
 
     public function members(): BelongsToMany
     {
@@ -104,6 +110,15 @@ class Tenant extends Model
                             Document::make('document')
                                 ->label('CPF/CNPJ')
                                 ->required(),
+                            ToggleButtons::make('type')
+                                ->label('Tipo')
+                                ->inline()
+                                ->default(TypeTenantEnum::OTHERS)
+                                ->options([
+                                    TypeTenantEnum::VEHICLES->value => TypeTenantEnum::VEHICLES->getLabel(),
+                                    TypeTenantEnum::MECHANICS->value => TypeTenantEnum::MECHANICS->getLabel(),
+                                    TypeTenantEnum::OTHERS->value => TypeTenantEnum::OTHERS->getLabel(),
+                                ]),
                             FileUpload::make('avatar')
                                 ->label('Avatar')
                                 ->acceptedFileTypes(['image/*'])
