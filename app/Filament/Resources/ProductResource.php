@@ -50,9 +50,6 @@ class ProductResource extends Resource
                     ->money('BRL')
                     ->searchable(),
             ])
-            ->filters([
-                //
-            ])
             ->actions([
                 ActionGroup::make([
                     EditAction::make(),

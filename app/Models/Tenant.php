@@ -88,7 +88,7 @@ class Tenant extends Model
         return $this->hasMany(Lead::class);
     }
 
-    public function productsCategories(): HasMany
+    public function productCategories(): HasMany
     {
         return $this->hasMany(ProductCategory::class);
     }
