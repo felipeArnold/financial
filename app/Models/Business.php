@@ -30,6 +30,16 @@ class Business extends Model
         return $this->belongsTo(Tenant::class);
     }
 
+    public function responsible(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'responsible_id');
+    }
+
+    public function lead(): BelongsTo
+    {
+        return $this->belongsTo(Lead::class);
+    }
+
     public static function getForm(): array
     {
         return [
@@ -92,22 +102,10 @@ class Business extends Model
                         ->native(false),
                     DatePicker::make('closing_forecast')
                         ->label('Previsão de fechamento'),
-                    //                    Select::make('funnel_id')
-                    //                        ->label('Funil')
-                    //                        ->options(BusinessFunnels::pluck('name', 'id'))
-                    //                        ->reactive()
-                    //                        ->afterStateUpdated(function ($state, $set, $get) {
-                    //
-                    //                            $funnel = BusinessFunnels::find($state);
-                    //                            $stages = $funnel->stages;
-                    ////                            $set('stage_id', $stages->pluck('name', 'id')->toArray());
-                    //                            $set('stage_id', $stages->pluck('name', 'id')->toArray());
-                    //                        })
-                    //                        ->required()
-                    //                        ->native(false),
                     Select::make('stage_id')
                         ->label('Estágio')
                         ->options(BusinessStages::pluck('name', 'id'))
+                        ->default(BusinessStages::first()->id)
                         ->reactive()
                         ->rules('required')
                         ->native(false),
@@ -115,4 +113,6 @@ class Business extends Model
                 ])->columns(2),
         ];
     }
+
+
 }

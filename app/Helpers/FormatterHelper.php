@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use App\Models\Property\Property;
+use Illuminate\Support\Str;
 use NumberFormatter;
 
 abstract class FormatterHelper
@@ -39,6 +41,10 @@ abstract class FormatterHelper
 
     public static function date(mixed $value): string
     {
+        if (is_null($value) || $value === '' || $value === '0000-00-00') {
+            return 'Não informado';
+        }
+
         return \Carbon\Carbon::parse($value)->format('d/m/Y');
     }
 
@@ -46,7 +52,7 @@ abstract class FormatterHelper
     {
         $value = self::onlyNumbers($value);
 
-        return substr($value, 6, 2).substr($value, 4, 2).substr($value, 0, 4);
+        return substr($value, 6, 2) . substr($value, 4, 2) . substr($value, 0, 4);
     }
 
     public static function money(mixed $value, bool $currency = false): string
@@ -77,6 +83,17 @@ abstract class FormatterHelper
         return number_format($value, $afterComma, '.', '');
     }
 
+    public static function moneyToFloat(mixed $value): float
+    {
+        $money = self::onlyNumbers($value);
+
+        if (strlen($money) === 0) {
+            return 0.00;
+        }
+
+        return substr($money, 0, -2) . '.' . substr($money, -2);
+    }
+
     public static function phone(mixed $value): string
     {
         $value = self::onlyNumbers($value);
@@ -90,5 +107,42 @@ abstract class FormatterHelper
         }
 
         return '';
+    }
+
+    public static function clearAccentuation(mixed $value): string
+    {
+        return preg_replace(
+            [
+                '/(á|à|ã|â|ä)/', '/(Á|À|Ã|Â|Ä)/',
+                '/(é|è|ê|ë)/', '/(É|È|Ê|Ë)/',
+                '/(í|ì|î|ï)/', '/(Í|Ì|Î|Ï)/',
+                '/(ó|ò|õ|ô|ö)/', '/(Ó|Ò|Õ|Ô|Ö)/',
+                '/(ú|ù|û|ü)/', '/(Ú|Ù|Û|Ü)/',
+                '/(ñ)/', '/(Ñ)/',
+            ],
+            ['a', 'A', 'e', 'E', 'i', 'I', 'o', 'O', 'u', 'U', 'n', 'N'],
+            $value
+        );
+    }
+
+    public static function separateUnderscore(mixed $value): string
+    {
+        return strtolower(preg_replace('/(?<=\w)(?=[A-Z])/', '_$1', $value));
+    }
+
+    public static function abbreviationName(string $value): string
+    {
+        // use clearAccentuation to remove special characters
+        $value = explode(' ', strtoupper(self::clearAccentuation($value)));
+
+        $first = substr(current($value), 0, 1);
+
+        if (count($value) === 1) {
+            return $first;
+        }
+
+        $last = substr(end($value), 0, 1);
+
+        return $first . $last;
     }
 }
