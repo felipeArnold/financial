@@ -4,15 +4,18 @@ namespace App\Models;
 
 use App\Enums\Business\StatusEnum;
 use App\Filament\Forms\Components\PtbrMoney;
+use App\Observers\BusinessObserver;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Leandrocfe\FilamentPtbrFormFields\Money;
 
+#[ObservedBy(BusinessObserver::class)]
 class Business extends Model
 {
     use HasFactory;
@@ -44,6 +47,7 @@ class Business extends Model
     {
         return [
             Section::make('Lead')
+                ->description('Dados da pessoa relacionada ao negócio')
                 ->schema([
                     Select::make('lead_id')
                         ->label('Pessoa')
@@ -80,20 +84,32 @@ class Business extends Model
                         ->native(false),
                 ])->columns(2),
             Section::make('Negócio')
+                ->description('Dados gerais da negociação')
                 ->schema([
                     TextInput::make('name')
                         ->label('Nome do negócio')
+                        ->rules('required'),
+                    Select::make('stage_id')
+                        ->label('Estágio')
+                        ->options(BusinessStages::pluck('name', 'id'))
+                        ->default(BusinessStages::first()->id)
+                        ->reactive()
                         ->rules('required')
-                        ->columnSpan(2),
+                        ->native(false),
                     PtbrMoney::make('valuation')
                         ->label('Valor')
                         ->rules('required'),
-                    Select::make('status')
-                        ->label('Status')
-                        ->options(StatusEnum::class)
+                    ToggleButtons::make('status')
+                        ->inline()
                         ->default(StatusEnum::RUNNING)
-                        ->rules('required')
-                        ->native(false),
+                        ->options(StatusEnum::class)
+                        ->colors([
+                            'gain' => 'green',
+                            'running' => 'blue',
+                            'pending' => 'yellow',
+                        ])
+                        ->grouped()
+                        ->required(),
                     Select::make('responsible_id')
                         ->label('Responsável')
                         ->options(User::pluck('name', 'id'))
@@ -102,13 +118,7 @@ class Business extends Model
                         ->native(false),
                     DatePicker::make('closing_forecast')
                         ->label('Previsão de fechamento'),
-                    Select::make('stage_id')
-                        ->label('Estágio')
-                        ->options(BusinessStages::pluck('name', 'id'))
-                        ->default(BusinessStages::first()->id)
-                        ->reactive()
-                        ->rules('required')
-                        ->native(false),
+
 
                 ])->columns(2),
         ];
