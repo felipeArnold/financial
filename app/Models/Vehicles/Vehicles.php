@@ -29,6 +29,7 @@ class Vehicles extends Model
 
     protected $casts = [
         'type' => VehiclesTypeEnum::class,
+        'sale_date' => 'date',
     ];
 
     public function tenant(): BelongsTo

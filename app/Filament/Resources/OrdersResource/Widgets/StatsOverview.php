@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\OrdersResource\Widgets;
 
 use App\Models\Orders;
+use App\Models\Person;
+use App\Models\Vehicles\Vehicles;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -18,26 +20,37 @@ class StatsOverview extends BaseWidget
             ->groupBy('date')
             ->get();
 
+        $clients = Person::query()
+            ->where('type', 'P')
+            ->get();
+
+        $vehicles = Vehicles::query()
+            ->orderBy('sale_date')
+            ->get()
+            ->groupBy(function ($date) {
+                return $date->sale_date->format('m');
+            });
+
         return [
-            stat::make('Unique views', '500.1k')
-                ->description('32k increase')
+            stat::make('Clientes', $clients->count())
+                ->description('Clientes cadastrados')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
-                ->chart([7, 2, 10])
+                ->chart($clients->pluck('id')->toArray())
                 ->color('success'),
             stat::make('Ordens', $orders->pluck('total')->sum())
                 ->description($orders->count().' criadas')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->chart($orders->pluck('count')->toArray())
                 ->color('success'),
-            stat::make('Revenue', '$12,000')
-                ->description('2k increase')
+            stat::make('Veículos', $vehicles->count())
+                ->description('Veículos vendidos')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
-                ->chart([7, 2, 10, 3, 15, 4, 17])
+                ->chart($vehicles->pluck('id')->toArray())
                 ->color('success'),
-            stat::make('Conversion rate', '2.5%')
-                ->description('0.5% increase')
+            stat::make('Receita', $orders->pluck('total')->sum())
+                ->description('Receita total')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
-                ->chart([3, 2, 5, 3, 7, 4, 9])
+                ->chart($orders->pluck('total')->toArray())
                 ->color('success'),
         ];
     }

@@ -8,10 +8,12 @@ use App\Filament\Resources\OrdersResource\Widgets\CustomersChart;
 use App\Filament\Resources\OrdersResource\Widgets\OrdersChart;
 use App\Filament\Resources\OrdersResource\Widgets\StatsOverview;
 use App\Models\Tenant;
+use Filament\FontProviders\GoogleFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -42,13 +44,8 @@ class AppPanelProvider extends PanelProvider
                 Tenant::class,
                 slugAttribute: 'slug'
             )
-            ->tenantRegistration(RegisterTeam::class)
+//            ->tenantRegistration(RegisterTeam::class)
             ->tenantProfile(EditTeamProfile::class)
-            ->tenantMenuItems([
-                MenuItem::make()
-                    ->label('Configurações')
-                    ->icon('heroicon-m-cog-8-tooth'),
-            ])
             ->brandLogo(fn () => view('components.logo'))
             ->plugins([
                 FilamentSpatieLaravelBackupPlugin::make(),
@@ -56,8 +53,9 @@ class AppPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->databaseNotificationsPolling('60s')
             ->sidebarCollapsibleOnDesktop()
-//            ->topNavigation()
+            ->topNavigation()
             ->spa()
+            ->font('Inter', provider: GoogleFontProvider::class)
             ->navigationGroups([
                 'Financeiro',
                 'Negócios',
@@ -84,6 +82,11 @@ class AppPanelProvider extends PanelProvider
                 StatsOverview::class,
                 CustomersChart::class,
                 OrdersChart::class,
+            ])
+            ->userMenuItems([
+                MenuItem::make()->label('Configurações')
+                    ->icon('heroicon-o-cog'),
+                'logout' => MenuItem::make()->label('Sair'),
             ])
             ->middleware([
                 EncryptCookies::class,

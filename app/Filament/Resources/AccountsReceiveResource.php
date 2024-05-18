@@ -43,6 +43,12 @@ class AccountsReceiveResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+
+    public static function getNavigationBadge(): ?string
+    {
+        return 'Beta';
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema(AccountsReceive::getForm());

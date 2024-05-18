@@ -15,6 +15,11 @@ class OrdersChart extends ChartWidget
         return 'bar';
     }
 
+    public function getDescription(): ?string
+    {
+        return 'Ordens criadas por mês';
+    }
+
     protected function getData(): array
     {
         $orders = \App\Models\Orders::all()->groupBy(function ($order) {

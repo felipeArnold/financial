@@ -4,12 +4,14 @@ namespace App\Filament\Pages\Tenancy;
 
 namespace App\Filament\Pages\Tenancy;
 
+use App\Filament\Clusters\Settings;
 use App\Models\Tenant;
 use Filament\Forms\Form;
 use Filament\Pages\Tenancy\EditTenantProfile;
 
 class EditTeamProfile extends EditTenantProfile
 {
+
     public static function getLabel(): string
     {
         return 'Editar dados da equipe';
@@ -17,7 +19,6 @@ class EditTeamProfile extends EditTenantProfile
 
     public function form(Form $form): Form
     {
-        return $form
-            ->schema(Tenant::getForm());
+        return $form->schema(Tenant::getForm());
     }
 }
