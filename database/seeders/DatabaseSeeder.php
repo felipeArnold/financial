@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Person;
+use App\Models\Vehicles\Vehicles;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,9 +16,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(FirstUserSeeder::class);
         $this->call(FirstTenantSeeder::class);
-
-        Person::factory(50)->create([
-            'tenant_id' => 1,
-        ]);
+        $this->call(PersonSeeder::class);
+        $this->call(LeadSeeder::class);
+        $this->call(VehiclesSeeder::class);
     }
 }

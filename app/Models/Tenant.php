@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Tenant\PlansEnum;
 use App\Enums\Tenant\TypeTenantEnum;
+use App\Models\Vehicles\Vehicles;
 use App\Observers\TenantObserver;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -91,6 +92,11 @@ class Tenant extends Model
     public function productCategories(): HasMany
     {
         return $this->hasMany(ProductCategory::class);
+    }
+
+    public function vehicles(): HasMany
+    {
+        return $this->hasMany(Vehicles::class);
     }
 
     public function getFilamentAvatarUrl(): ?string

@@ -2,17 +2,18 @@
 
 namespace Database\Seeders;
 
-use App\Models\Lead;
+use App\Models\Person;
+use App\Models\Vehicles\Vehicles;
 use Illuminate\Database\Seeder;
 
-class LeadSeeder extends Seeder
+class VehiclesSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Lead::factory(50)->create([
+        Vehicles::factory(50)->create([
             'tenant_id' => 1,
         ]);
     }

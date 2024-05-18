@@ -2,17 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\Lead;
+use App\Models\Person;
 use Illuminate\Database\Seeder;
 
-class LeadSeeder extends Seeder
+class PersonSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Lead::factory(50)->create([
+        Person::factory(50)->create([
             'tenant_id' => 1,
         ]);
     }
